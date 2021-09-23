@@ -10,8 +10,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
-public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
-{
+public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal {
     private final TameableDragonEntity entity;
     private final Class<T> classToAvoid;
     private final float avoidDistance;
@@ -20,8 +19,7 @@ public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
     private final EntityPredicate builtTargetSelector;
     private T avoidTarget;
 
-    public WRAvoidEntityGoal(TameableDragonEntity entity, Class<T> classToAvoid, float avoidDistance, double speed)
-    {
+    public WRAvoidEntityGoal(TameableDragonEntity entity, Class<T> classToAvoid, float avoidDistance, double speed) {
         this(entity, classToAvoid, e -> true, avoidDistance, speed, speed * 1.43);
     }
 
@@ -37,8 +35,7 @@ public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
     }
 
     @Override
-    public boolean canUse()
-    {
+    public boolean canUse() {
         if (entity.isTame()) return false;
         this.avoidTarget = entity.level.getNearestEntity(classToAvoid, builtTargetSelector, entity, entity.getX(), entity.getY(), entity.getZ(), entity.getBoundingBox().inflate(avoidDistance, 3.0D, avoidDistance));
         if (avoidTarget == null) return false;
@@ -49,21 +46,18 @@ public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
     }
 
     @Override
-    public boolean canContinueToUse()
-    {
+    public boolean canContinueToUse() {
         return !entity.getNavigation().isDone();
     }
 
 
-    public void tick()
-    {
+    public void tick() {
         if (entity.distanceToSqr(avoidTarget) < 49) entity.getNavigation().setSpeedModifier(nearSpeed);
         else entity.getNavigation().setSpeedModifier(farSpeed);
     }
 
     @Override
-    public void stop()
-    {
+    public void stop() {
         avoidTarget = null;
     }
 }

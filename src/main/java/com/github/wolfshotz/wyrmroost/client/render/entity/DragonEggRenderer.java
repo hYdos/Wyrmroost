@@ -20,21 +20,18 @@ import net.minecraft.util.ResourceLocation;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
-{
+public class DragonEggRenderer extends EntityRenderer<DragonEggEntity> {
     public static final ResourceLocation DEFAULT_TEXTURE = Wyrmroost.id("textures/entity/dragon/dragon_egg.png");
     public static final Model MODEL = new Model();
 
     private static final Map<EntityType<?>, ResourceLocation> TEXTURE_MAP = new HashMap<>();
 
-    public DragonEggRenderer(EntityRendererManager manager)
-    {
+    public DragonEggRenderer(EntityRendererManager manager) {
         super(manager);
     }
 
     @Override
-    public void render(DragonEggEntity entity, float entityYaw, float partialTicks, MatrixStack ms, IRenderTypeBuffer buffer, int packedLightIn)
-    {
+    public void render(DragonEggEntity entity, float entityYaw, float partialTicks, MatrixStack ms, IRenderTypeBuffer buffer, int packedLightIn) {
         ms.pushPose();
         scale(entity, ms);
         ms.translate(0, -1.5, 0);
@@ -47,19 +44,16 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
     }
 
     @Override
-    protected boolean shouldShowName(DragonEggEntity entity)
-    {
+    protected boolean shouldShowName(DragonEggEntity entity) {
         return false;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DragonEggEntity entity)
-    {
+    public ResourceLocation getTextureLocation(DragonEggEntity entity) {
         return getDragonEggTexture(entity.containedDragon);
     }
 
-    public static ResourceLocation getDragonEggTexture(EntityType<?> type)
-    {
+    public static ResourceLocation getDragonEggTexture(EntityType<?> type) {
         return TEXTURE_MAP.computeIfAbsent(type, t ->
         {
             ResourceLocation textureLoc = Wyrmroost.id(String.format("textures/entity/dragon/%s/egg.png", type.getRegistryName().getPath()));
@@ -72,8 +66,7 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
      * Render Custom egg sizes / shapes. <P>
      * If none is defined, then calculate the model size according to egg size
      */
-    private void scale(DragonEggEntity entity, MatrixStack ms)
-    {
+    private void scale(DragonEggEntity entity, MatrixStack ms) {
         EntitySize size = entity.getDimensions();
         if (size != null) ms.scale(size.width * 3, -(size.height * 2), -(size.width * 3));
     }
@@ -82,15 +75,13 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
      * WREggTemplate - Ukan
      * Created using Tabula 7.0.1
      */
-    public static class Model extends EntityModel<DragonEggEntity>
-    {
+    public static class Model extends EntityModel<DragonEggEntity> {
         public WRModelRenderer base;
         public ModelRenderer two;
         public ModelRenderer three;
         public ModelRenderer four;
 
-        public Model()
-        {
+        public Model() {
             super(RenderType::entitySolid);
             texWidth = 64;
             texHeight = 32;
@@ -114,20 +105,17 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
         }
 
         @Override
-        public void setupAnim(DragonEggEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
-        {
+        public void setupAnim(DragonEggEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         }
 
-        public void animate(DragonEggEntity entity, float partialTicks)
-        {
+        public void animate(DragonEggEntity entity, float partialTicks) {
             float time = entity.wiggleTime.get(partialTicks);
             base.xRot = time * entity.wiggleDirection.getStepX();
             base.zRot = time * entity.wiggleDirection.getStepZ();
         }
 
         @Override
-        public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
-        {
+        public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
             base.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             base.reset();
         }

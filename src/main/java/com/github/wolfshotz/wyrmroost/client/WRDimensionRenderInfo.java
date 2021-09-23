@@ -11,48 +11,38 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-public class WRDimensionRenderInfo extends DimensionRenderInfo
-{
+public class WRDimensionRenderInfo extends DimensionRenderInfo {
     private final int weatherTime = 0;
 
-    public WRDimensionRenderInfo()
-    {
+    public WRDimensionRenderInfo() {
         super(128f, true, DimensionRenderInfo.FogType.NORMAL, false, false);
 //        setWeatherRenderHandler(this::renderWeather);
 //        setWeatherParticleRenderHandler(this::renderWeatherParticles);
     }
 
     @Override
-    public Vector3d getBrightnessDependentFogColor(Vector3d color, float density)
-    {
+    public Vector3d getBrightnessDependentFogColor(Vector3d color, float density) {
         return color.multiply(density * 0.94F + 0.06F, density * 0.94F + 0.06F, density * 0.91F + 0.09F);
     }
 
     @Override
-    public boolean isFoggyAt(int p_230493_1_, int p_230493_2_)
-    {
+    public boolean isFoggyAt(int p_230493_1_, int p_230493_2_) {
         return false;
     }
 
-    private void renderWeather(int ticks, float partialTicks, ClientWorld world, Minecraft minecraft, LightTexture lightTexture, double x, double y, double z)
-    {
+    private void renderWeather(int ticks, float partialTicks, ClientWorld world, Minecraft minecraft, LightTexture lightTexture, double x, double y, double z) {
 
     }
 
-    private void renderWeatherParticles(int ticks, ClientWorld level, Minecraft client, ActiveRenderInfo renderInfo)
-    {
+    private void renderWeatherParticles(int ticks, ClientWorld level, Minecraft client, ActiveRenderInfo renderInfo) {
     }
 
     // woulda put it in static block but class loading :)
-    public static void init()
-    {
-        try
-        {
+    public static void init() {
+        try {
             Object2ObjectMap<ResourceLocation, DimensionRenderInfo> infoMap = ObfuscationReflectionHelper.getPrivateValue(DimensionRenderInfo.class, null, "field_239208_a_");
             infoMap.put(WRWorld.THE_WYRMROOST.location(), new WRDimensionRenderInfo());
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             throw new RuntimeException("Could not apply Wyrmroost Dimension Render info.\n" + e);
         }
     }

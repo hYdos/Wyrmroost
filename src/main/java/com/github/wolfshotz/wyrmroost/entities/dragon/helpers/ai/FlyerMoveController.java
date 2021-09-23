@@ -12,32 +12,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
 
-public class FlyerMoveController extends MovementController
-{
+public class FlyerMoveController extends MovementController {
     private final TameableDragonEntity dragon;
 
-    public FlyerMoveController(TameableDragonEntity dragon)
-    {
+    public FlyerMoveController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
     }
 
-    public void tick()
-    {
-        if (dragon.canBeControlledByRider())
-        {
+    public void tick() {
+        if (dragon.canBeControlledByRider()) {
             operation = Action.WAIT;
             return;
         }
 
-        if (operation == Action.MOVE_TO)
-        {
+        if (operation == Action.MOVE_TO) {
             double x = wantedX - dragon.getX();
             double y = wantedY - dragon.getY();
             double z = wantedZ - dragon.getZ();
             double distSq = x * x + y * y + z * z;
-            if (distSq < 2.5000003E-7)
-            {
+            if (distSq < 2.5000003E-7) {
                 dragon.setZza(0f);
                 return;
             }
@@ -45,23 +39,19 @@ public class FlyerMoveController extends MovementController
 
             float speed;
 
-            if (dragon.isFlying())
-            {
+            if (dragon.isFlying()) {
                 speed = (float) (dragon.getAttributeValue(Attributes.FLYING_SPEED) * speedModifier);
 
                 if (!dragon.getLookControl().isHasWanted())
                     dragon.getLookControl().setLookAt(wantedX, wantedY, wantedZ, dragon.getHeadRotSpeed(), 75);
-                if (y != 0) dragon.setYya(y > 0? speed : -speed);
-            }
-            else
-            {
+                if (y != 0) dragon.setYya(y > 0 ? speed : -speed);
+            } else {
                 speed = (float) (dragon.getAttributeValue(Attributes.MOVEMENT_SPEED) * speedModifier);
                 BlockPos blockpos = dragon.blockPosition();
                 BlockState state = dragon.level.getBlockState(blockpos);
                 Block block = state.getBlock();
                 VoxelShape voxelshape = state.getCollisionShape(dragon.level, blockpos);
-                if (y > (double) dragon.maxUpStep && x * x + z * z < (double) Math.max(1.0F, dragon.getBbWidth()) || !voxelshape.isEmpty() && dragon.getY() < voxelshape.max(Direction.Axis.Y) + (double) blockpos.getY() && !block.is(BlockTags.DOORS) && !block.is(BlockTags.FENCES))
-                {
+                if (y > (double) dragon.maxUpStep && x * x + z * z < (double) Math.max(1.0F, dragon.getBbWidth()) || !voxelshape.isEmpty() && dragon.getY() < voxelshape.max(Direction.Axis.Y) + (double) blockpos.getY() && !block.is(BlockTags.DOORS) && !block.is(BlockTags.FENCES)) {
                     dragon.getJumpControl().jump();
                     operation = MovementController.Action.JUMPING;
                 }
@@ -69,9 +59,7 @@ public class FlyerMoveController extends MovementController
             dragon.yRot = rotlerp(dragon.yRot, (float) (MathHelper.atan2(z, x) * (180f / Mafs.PI)) - 90f, dragon.getYawRotationSpeed());
             dragon.setSpeed(speed);
             operation = Action.WAIT;
-        }
-        else
-        {
+        } else {
             dragon.setSpeed(0);
             dragon.setXxa(0);
             dragon.setYya(0);

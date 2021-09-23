@@ -13,8 +13,7 @@ import net.minecraft.util.math.MathHelper;
  * WRCoinDragon - Ukan
  * Created using Tabula 8.0.0
  */
-public class CoinDragonModel extends WREntityModel<CoinDragonEntity>
-{
+public class CoinDragonModel extends WREntityModel<CoinDragonEntity> {
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[5];
 
     public final ModelRenderer body1;
@@ -37,8 +36,7 @@ public class CoinDragonModel extends WREntityModel<CoinDragonEntity>
     public final ModelRenderer eyeR;
     public final ModelRenderer[] tails;
 
-    public CoinDragonModel()
-    {
+    public CoinDragonModel() {
         this.texWidth = 50;
         this.texHeight = 15;
         this.body1 = new ModelRenderer(this, 0, 0);
@@ -136,12 +134,11 @@ public class CoinDragonModel extends WREntityModel<CoinDragonEntity>
         this.body2.addChild(this.tail1);
         this.tail1.addChild(this.tail2);
 
-        this.tails = new ModelRenderer[] {tail1, tail2, tail3};
+        this.tails = new ModelRenderer[]{tail1, tail2, tail3};
     }
 
     @Override
-    public ResourceLocation getTexture(CoinDragonEntity entity)
-    {
+    public ResourceLocation getTexture(CoinDragonEntity entity) {
         int i = entity.getVariant();
         ResourceLocation texture = TEXTURES[i];
         if (texture == null)
@@ -150,20 +147,17 @@ public class CoinDragonModel extends WREntityModel<CoinDragonEntity>
     }
 
     @Override
-    public float getShadowRadius(CoinDragonEntity entity)
-    {
+    public float getShadowRadius(CoinDragonEntity entity) {
         return 0.25f;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
-    {
+    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         body1.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void setupAnim(CoinDragonEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
-    {
+    public void setupAnim(CoinDragonEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         float flap = MathHelper.cos(ageInTicks * 3f) * 0.6f + 0.75f;
         wingL.zRot = flap;
         wingR.zRot = -flap;

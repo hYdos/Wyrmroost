@@ -11,18 +11,15 @@ import net.minecraft.world.gen.Heightmap;
 
 import java.util.Random;
 
-public class WRSitGoal extends SitGoal
-{
+public class WRSitGoal extends SitGoal {
     private final TameableDragonEntity dragon;
 
-    public WRSitGoal(TameableDragonEntity dragon)
-    {
+    public WRSitGoal(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
     }
 
-    public boolean canUse()
-    {
+    public boolean canUse() {
         if (!dragon.isTame()) return false;
         if (dragon.isInWaterOrBubble() && dragon.getMobType() != CreatureAttribute.WATER) return false;
         if (!dragon.isOnGround() && !dragon.isFlying()) return false;
@@ -32,21 +29,17 @@ public class WRSitGoal extends SitGoal
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         if (dragon.isFlying()) // get to ground first
         {
-            if (dragon.getNavigation().isDone())
-            {
+            if (dragon.getNavigation().isDone()) {
                 BlockPos pos = findLandingPos();
                 dragon.getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), 1.05);
             }
-        }
-        else dragon.setOrderedToSit(true);
+        } else dragon.setOrderedToSit(true);
     }
 
-    private BlockPos findLandingPos()
-    {
+    private BlockPos findLandingPos() {
         Random rand = dragon.getRandom();
 
         // get current entity position

@@ -6,21 +6,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class TarragonTomeScreen extends Screen implements BookScreen
-{
-    public TarragonTomeScreen()
-    {
+public class TarragonTomeScreen extends Screen implements BookScreen {
+    public TarragonTomeScreen() {
         super(new TranslationTextComponent("tarragonTome.title"));
     }
 
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
         return false;
     }
 
-    public static void open(PlayerEntity player, ItemStack stack)
-    {
+    public static void open(PlayerEntity player, ItemStack stack) {
         ClientEvents.getClient().setScreen(new TarragonTomeScreen());
     }
 }

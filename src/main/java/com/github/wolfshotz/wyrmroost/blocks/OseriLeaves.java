@@ -8,19 +8,16 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class OseriLeaves extends LeavesBlock
-{
+public class OseriLeaves extends LeavesBlock {
     private final int particleColor;
 
-    public OseriLeaves(int particleColor, Properties properties)
-    {
+    public OseriLeaves(int particleColor, Properties properties) {
         super(properties);
         this.particleColor = particleColor;
     }
 
     @Override
-    public void animateTick(BlockState state, World level, BlockPos pos, Random random)
-    {
+    public void animateTick(BlockState state, World level, BlockPos pos, Random random) {
         super.animateTick(state, level, pos, random);
         if (random.nextDouble() < 0.05) PetalParticle.play(level, pos, random, particleColor);
     }

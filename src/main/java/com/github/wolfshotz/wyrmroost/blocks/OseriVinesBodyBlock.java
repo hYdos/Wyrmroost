@@ -10,19 +10,16 @@ import net.minecraft.world.World;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class OseriVinesBodyBlock extends GrowingPlantBodyBlock
-{
+public class OseriVinesBodyBlock extends GrowingPlantBodyBlock {
     private final int particleColor;
 
-    public OseriVinesBodyBlock(Supplier<Block> tip, int particleColor)
-    {
+    public OseriVinesBodyBlock(Supplier<Block> tip, int particleColor) {
         super(WRBlocks.plant(), tip);
         this.particleColor = particleColor;
     }
 
     @Override
-    public void animateTick(BlockState state, World level, BlockPos pos, Random random)
-    {
+    public void animateTick(BlockState state, World level, BlockPos pos, Random random) {
         super.animateTick(state, level, pos, random);
         if (random.nextDouble() < 0.0285) PetalParticle.play(level, pos, random, particleColor);
     }

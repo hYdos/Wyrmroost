@@ -6,20 +6,17 @@ import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-public class WRFollowOwnerGoal extends Goal
-{
+public class WRFollowOwnerGoal extends Goal {
     private final TameableDragonEntity dragon;
     private int newPathTicks = 0;
 
-    public WRFollowOwnerGoal(TameableDragonEntity tameableEntity)
-    {
+    public WRFollowOwnerGoal(TameableDragonEntity tameableEntity) {
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         this.dragon = tameableEntity;
     }
 
     @Override
-    public boolean canUse()
-    {
+    public boolean canUse() {
         final double MINIMUM_FOLLOW_DIST = dragon.getBbWidth() * dragon.getBbWidth() + 100;
 
         if (dragon.isInSittingPose() || dragon.isLeashed() || dragon.hasRestriction()) return false;
@@ -29,8 +26,7 @@ public class WRFollowOwnerGoal extends Goal
     }
 
     @Override
-    public boolean canContinueToUse()
-    {
+    public boolean canContinueToUse() {
         final double MINIMUM_TRAVEL_DIST = dragon.getBbWidth() * dragon.getBbWidth() + 6.25;
 
         if (dragon.isInSittingPose() || dragon.isLeashed()) return false;
@@ -41,22 +37,19 @@ public class WRFollowOwnerGoal extends Goal
     }
 
     @Override
-    public void stop()
-    {
+    public void stop() {
         dragon.getNavigation().stop();
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         LivingEntity owner = dragon.getOwner();
         dragon.getLookControl().setLookAt(owner, 90, 90);
 
-        if (++newPathTicks >= 10 || dragon.getNavigation().isDone())
-        {
+        if (++newPathTicks >= 10 || dragon.getNavigation().isDone()) {
             newPathTicks = 0;
 
-            final double minTeleportDist = (dragon.getBbWidth() * 5 * dragon.getBbWidth() * 5 * (dragon.isFlying()? dragon.getBbWidth() * 5 : 1)) + 196;
+            final double minTeleportDist = (dragon.getBbWidth() * 5 * dragon.getBbWidth() * 5 * (dragon.isFlying() ? dragon.getBbWidth() * 5 : 1)) + 196;
 
             if (dragon.distanceToSqr(owner) > minTeleportDist && (owner.getRootVehicle().isOnGround() || dragon.canFly()) && dragon.tryTeleportToOwner())
                 dragon.getNavigation().stop();

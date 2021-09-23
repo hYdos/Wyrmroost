@@ -39,8 +39,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.OptionalDouble;
 
-public class RenderHelper extends RenderType
-{
+public class RenderHelper extends RenderType {
     // == [Render Types] ==
 
     private static final RenderType TRANSPARENT = create("transparent_color", DefaultVertexFormats.POSITION_COLOR, 7, 256, false, true, RenderType.State
@@ -50,13 +49,11 @@ public class RenderHelper extends RenderType
             .createCompositeState(false));
 
     @SuppressWarnings("ConstantConditions")
-    private RenderHelper()
-    {
+    private RenderHelper() {
         super(null, null, 0, 0, false, false, null, null); // dummy
     }
 
-    public static RenderType getAdditiveGlow(ResourceLocation locationIn)
-    {
+    public static RenderType getAdditiveGlow(ResourceLocation locationIn) {
         return create("glow_additive", DefaultVertexFormats.NEW_ENTITY, GL11.GL_QUADS, 256, false, true, State.builder()
                 .setTextureState(new TextureState(locationIn, false, false))
                 .setTransparencyState(ADDITIVE_TRANSPARENCY)
@@ -64,8 +61,7 @@ public class RenderHelper extends RenderType
                 .createCompositeState(false));
     }
 
-    public static RenderType getTranslucentGlow(ResourceLocation texture)
-    {
+    public static RenderType getTranslucentGlow(ResourceLocation texture) {
         return create("glow_transluscent", DefaultVertexFormats.NEW_ENTITY, GL11.GL_QUADS, 256, false, true, State.builder()
                 .setTextureState(new TextureState(texture, false, false))
                 .setCullState(NO_CULL)
@@ -74,8 +70,7 @@ public class RenderHelper extends RenderType
                 .createCompositeState(false));
     }
 
-    public static RenderType getThiccLines(double thickness)
-    {
+    public static RenderType getThiccLines(double thickness) {
         return create("thickened_lines", DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256, State.builder()
                 .setLineState(new LineState(OptionalDouble.of(thickness)))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -87,8 +82,7 @@ public class RenderHelper extends RenderType
 
     private static final ResourceLocation GUI_ICONS = Wyrmroost.id("textures/gui/overlay/icons.png");
 
-    public static void renderWorld(RenderWorldLastEvent evt)
-    {
+    public static void renderWorld(RenderWorldLastEvent evt) {
         MatrixStack ms = evt.getMatrixStack();
         float partialTicks = evt.getPartialTicks();
 
@@ -100,23 +94,19 @@ public class RenderHelper extends RenderType
         ms.popPose();
     }
 
-    public static void renderOverlay(RenderGameOverlayEvent evt)
-    {
-        if (evt.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)
-        {
+    public static void renderOverlay(RenderGameOverlayEvent evt) {
+        if (evt.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             Entity vehicle = ClientEvents.getPlayer().getVehicle();
-            if (vehicle instanceof TameableDragonEntity && ((TameableDragonEntity) vehicle).isFlying())
-            {
+            if (vehicle instanceof TameableDragonEntity && ((TameableDragonEntity) vehicle).isFlying()) {
                 ClientEvents.getClient().textureManager.bind(GUI_ICONS);
                 int y = ClientEvents.getClient().getWindow().getScreenHeight() / 2 - 24;
-                int yOff = ClientEvents.keybindFlight? 24 : 0;
+                int yOff = ClientEvents.keybindFlight ? 24 : 0;
                 AbstractGui.blit(evt.getMatrixStack(), 0, y, 0, yOff, 24, 24, 64, 64);
             }
         }
     }
 
-    public static void drawShape(MatrixStack ms, IVertexBuilder buffer, VoxelShape shape, double x, double y, double z, int argb)
-    {
+    public static void drawShape(MatrixStack ms, IVertexBuilder buffer, VoxelShape shape, double x, double y, double z, int argb) {
         Matrix4f matrix = ms.last().pose();
         float alpha = ((argb >> 24) & 0xFF) / 255f;
         float red = ((argb >> 16) & 0xFF) / 255f;
@@ -130,8 +120,7 @@ public class RenderHelper extends RenderType
         });
     }
 
-    public static void drawShape(MatrixStack ms, VoxelShape shape, double x, double y, double z, int argb)
-    {
+    public static void drawShape(MatrixStack ms, VoxelShape shape, double x, double y, double z, int argb) {
         IRenderTypeBuffer.Impl impl = getRenderBuffer();
         Vector3d view = ClientEvents.getProjectedView();
         float viewX = (float) (x - view.x);
@@ -155,21 +144,19 @@ public class RenderHelper extends RenderType
         impl.endBatch();
     }
 
-    public static void drawBlockPos(MatrixStack ms, BlockPos pos, double lineThickness, int argb, boolean getShape)
-    {
+    public static void drawBlockPos(MatrixStack ms, BlockPos pos, double lineThickness, int argb, boolean getShape) {
         IRenderTypeBuffer.Impl impl = getRenderBuffer();
         Vector3d view = ClientEvents.getProjectedView();
         ClientWorld level = ClientEvents.getLevel();
         drawShape(ms,
                 impl.getBuffer(getThiccLines(lineThickness)),
-                getShape? level.getBlockState(pos).getShape(level, pos) : VoxelShapes.block(),
+                getShape ? level.getBlockState(pos).getShape(level, pos) : VoxelShapes.block(),
                 pos.getX() - view.x, pos.getY() - view.y, pos.getZ() - view.z,
                 argb);
         impl.endBatch();
     }
 
-    public static void counterClockwiseCuboid(Matrix4f matrix, IVertexBuilder buffer, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float red, float green, float blue, float alpha)
-    {
+    public static void counterClockwiseCuboid(Matrix4f matrix, IVertexBuilder buffer, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float red, float green, float blue, float alpha) {
         buffer.vertex(matrix, fromX, fromY, fromZ).color(red, green, blue, alpha).endVertex();
         buffer.vertex(matrix, fromX, toY, fromZ).color(red, green, blue, alpha).endVertex();
         buffer.vertex(matrix, toX, toY, fromZ).color(red, green, blue, alpha).endVertex();
@@ -198,37 +185,32 @@ public class RenderHelper extends RenderType
 
     private static final Object2IntMap<Entity> ENTITY_OUTLINE_MAP = new Object2IntOpenHashMap<>(1);
 
-    public static void renderEntityOutline(Entity entity, int red, int green, int blue, int alpha)
-    {
+    public static void renderEntityOutline(Entity entity, int red, int green, int blue, int alpha) {
         ENTITY_OUTLINE_MAP.put(entity, ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF)));
     }
 
-    public static IRenderTypeBuffer.Impl getRenderBuffer()
-    {
+    public static IRenderTypeBuffer.Impl getRenderBuffer() {
         return Minecraft.getInstance().renderBuffers().bufferSource();
     }
 
     private static final Matrix4f flipX = Matrix4f.createScaleMatrix(-1, 1, 1);
     private static final Matrix3f flipXNormal = new Matrix3f(flipX);
 
-    public static void mirrorX(MatrixStack matrixStack)
-    {
+    public static void mirrorX(MatrixStack matrixStack) {
         matrixStack.last().pose().multiply(flipX);
 //        matrixStack.last().normal().multiplyBackward(flipXNormal);
 //        matrixStack.last().normal().mul(flipXNormal);
     }
 
     // todo: find a better, shaders friendly way to do this
-    public static void renderEntities(RenderLivingEvent.Pre<? super LivingEntity, ?> event)
-    {
+    public static void renderEntities(RenderLivingEvent.Pre<? super LivingEntity, ?> event) {
         LivingEntity entity = event.getEntity();
         MatrixStack ms = event.getMatrixStack();
         LivingRenderer<? super LivingEntity, ?> renderer = event.getRenderer();
         float partialTicks = event.getPartialRenderTick();
 
         int color = ENTITY_OUTLINE_MAP.removeInt(entity);
-        if (color != 0)
-        {
+        if (color != 0) {
             event.setCanceled(true);
 
             Minecraft mc = ClientEvents.getClient();
@@ -241,8 +223,7 @@ public class RenderHelper extends RenderType
         }
     }
 
-    private static void renderBook(MatrixStack ms, float partialTicks)
-    {
+    private static void renderBook(MatrixStack ms, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
         ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
@@ -251,8 +232,7 @@ public class RenderHelper extends RenderType
         TarragonTomeItem.getAction(stack).render(dragon, ms, partialTicks);
         if (dragon == null) return;
 
-        if (WRConfig.RENDER_OUTLINES.get())
-        {
+        if (WRConfig.RENDER_OUTLINES.get()) {
             renderEntityOutline(dragon, 0, 255, 255, (int) (MathHelper.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
             LivingEntity target = dragon.getTarget();
             if (target != null) renderEntityOutline(target, 255, 0, 0, 100);

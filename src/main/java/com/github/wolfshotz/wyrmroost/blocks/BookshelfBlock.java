@@ -8,16 +8,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
-public class BookshelfBlock extends Block
-{
-    public BookshelfBlock()
-    {
+public class BookshelfBlock extends Block {
+    public BookshelfBlock() {
         super(WRBlocks.properties(Material.WOOD, SoundType.WOOD).strength(1.5f));
     }
 
     @Override
-    public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos)
-    {
+    public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
         return 1;
     }
 }

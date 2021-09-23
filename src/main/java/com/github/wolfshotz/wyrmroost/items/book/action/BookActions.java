@@ -3,8 +3,7 @@ package com.github.wolfshotz.wyrmroost.items.book.action;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookActions
-{
+public class BookActions {
     public static final List<BookAction> ACTIONS = new ArrayList<>();
 
     public static final BookAction DEFAULT = register(new DefaultBookAction());
@@ -12,8 +11,7 @@ public class BookActions
     public static final BookAction HOME = register(new HomeBookAction());
     public static final BookAction TARGET = register(new TargetBookAction());
 
-    private static BookAction register(BookAction newAction)
-    {
+    private static BookAction register(BookAction newAction) {
         ACTIONS.add(newAction);
         return newAction;
     }

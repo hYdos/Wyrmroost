@@ -7,18 +7,15 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-public class SitBookAction implements BookAction
-{
+public class SitBookAction implements BookAction {
     @Override
-    public void onSelected(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack)
-    {
+    public void onSelected(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
         dragon.setOrderedToSit(!dragon.isInSittingPose());
         TarragonTomeItem.setAction(BookActions.DEFAULT, player, stack);
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
-    {
+    public String getTranslateKey(@Nullable TameableDragonEntity dragon) {
         if (dragon != null && dragon.isInSittingPose()) return TRANSLATE_PATH + "sit.come";
         return TRANSLATE_PATH + "sit.stay";
     }

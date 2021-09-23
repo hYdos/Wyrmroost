@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public class CollapsibleWidget extends Widget
-{
+public class CollapsibleWidget extends Widget {
     public static final byte TOP = 1;
     public static final byte BOTTOM = 2;
     public static final byte LEFT = 4;
@@ -26,8 +25,7 @@ public class CollapsibleWidget extends Widget
     public final List<DynamicSlot> slots = new ArrayList<>();
     private BooleanSupplier test = () -> true;
 
-    public CollapsibleWidget(int u0, int v0, int width, int height, byte direction, ResourceLocation spriteSheet)
-    {
+    public CollapsibleWidget(int u0, int v0, int width, int height, byte direction, ResourceLocation spriteSheet) {
         super(0, 0, width, height, StringTextComponent.EMPTY);
         this.u0 = u0;
         this.v0 = v0;
@@ -36,8 +34,7 @@ public class CollapsibleWidget extends Widget
     }
 
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
-    {
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
         ClientEvents.getClient().getTextureManager().bind(spriteSheet);
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         RenderSystem.enableBlend();
@@ -45,33 +42,28 @@ public class CollapsibleWidget extends Widget
         blit(ms, x, y, u0, v0, width, height);
     }
 
-    public CollapsibleWidget addSlot(DynamicSlot slot)
-    {
+    public CollapsibleWidget addSlot(DynamicSlot slot) {
         slot.condition(test);
         slots.add(slot);
         return this;
     }
 
-    public CollapsibleWidget condition(BooleanSupplier test)
-    {
+    public CollapsibleWidget condition(BooleanSupplier test) {
         this.test = test;
         return this;
     }
 
-    public boolean visible()
-    {
+    public boolean visible() {
         return this.visible = test.getAsBoolean();
     }
 
-    public boolean collapses()
-    {
+    public boolean collapses() {
         return isHovered();
     }
 
-    public void move(float amount, int maxWidth, int maxHeight)
-    {
-        double xMult = ((direction & LEFT) != 0? 0 : (direction & RIGHT) != 0? 1 : 0.5);
-        double yMult = ((direction & TOP) != 0? 0 : (direction & BOTTOM) != 0? 1 : 0.5);
+    public void move(float amount, int maxWidth, int maxHeight) {
+        double xMult = ((direction & LEFT) != 0 ? 0 : (direction & RIGHT) != 0 ? 1 : 0.5);
+        double yMult = ((direction & TOP) != 0 ? 0 : (direction & BOTTOM) != 0 ? 1 : 0.5);
 
         double x = xMult * maxWidth;
         double y = yMult * maxHeight;
@@ -87,8 +79,7 @@ public class CollapsibleWidget extends Widget
     }
 
     @Override
-    protected boolean isValidClickButton(int p_230987_1_)
-    {
+    protected boolean isValidClickButton(int p_230987_1_) {
         return false;
     }
 }

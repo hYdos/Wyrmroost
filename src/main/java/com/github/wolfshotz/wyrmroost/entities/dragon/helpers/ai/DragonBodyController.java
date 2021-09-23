@@ -9,19 +9,16 @@ import net.minecraft.util.math.MathHelper;
  * <p>
  * Disallows rotations while sitting, sleeping, and helps control yaw while controlling
  */
-public class DragonBodyController extends BodyController
-{
+public class DragonBodyController extends BodyController {
     public TameableDragonEntity dragon;
 
-    public DragonBodyController(TameableDragonEntity dragon)
-    {
+    public DragonBodyController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
     }
 
     @Override
-    public void clientTick()
-    {
+    public void clientTick() {
         // animate limbs when rotating
         float deg = Math.min(Math.abs(dragon.yRot - dragon.yBodyRot) * 0.05f, 1f);
         dragon.animationSpeed += deg * (1 - dragon.animationSpeed * 2);

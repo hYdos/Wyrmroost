@@ -10,8 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEntity>
-{
+public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEntity> {
     public static final ResourceLocation GRAY_SCALE = Wyrmroost.id(FOLDER + "dragon_fruit_drake/body.png");
     public static final ResourceLocation GRAY_SCALE_CHILD = Wyrmroost.id(FOLDER + "dragon_fruit_drake/body_child.png");
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[20];
@@ -69,8 +68,7 @@ public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEnt
     public WRModelRenderer LegfrontR3_1;
     public WRModelRenderer frontfootR_1;
 
-    public DragonFruitDrakeModel()
-    {
+    public DragonFruitDrakeModel() {
         this.texWidth = 100;
         this.texHeight = 70;
         this.LegSegmentR1 = new WRModelRenderer(this, 57, 31);
@@ -343,21 +341,18 @@ public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEnt
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder vertex, int light, int overlay, float red, float green, float blue, float alpha)
-    {
+    public void renderToBuffer(MatrixStack ms, IVertexBuilder vertex, int light, int overlay, float red, float green, float blue, float alpha) {
         Body1.render(ms, vertex, light, overlay, red, green, blue, alpha);
     }
 
     @Override
-    public void scale(DragonFruitDrakeEntity entity, MatrixStack ms, float partialTicks)
-    {
+    public void scale(DragonFruitDrakeEntity entity, MatrixStack ms, float partialTicks) {
         super.scale(entity, ms, partialTicks);
         ms.scale(1.5f, 1.5f, 1.5f);
     }
 
     @Override
-    public void postProcess(DragonFruitDrakeEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
-    {
+    public void postProcess(DragonFruitDrakeEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks) {
         int color = getColorByAge(entity);
         float r = ((color >> 16) & 0xFF) / 255f;
         float g = ((color >> 8) & 0xFF) / 255f;
@@ -366,33 +361,28 @@ public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEnt
     }
 
     @Override
-    public ResourceLocation getTexture(DragonFruitDrakeEntity entity)
-    {
-        int index = entity.isHatchling()? 2 : entity.isMale()? 0 : 1;
+    public ResourceLocation getTexture(DragonFruitDrakeEntity entity) {
+        int index = entity.isHatchling() ? 2 : entity.isMale() ? 0 : 1;
         if (entity.getVariant() == -1) index |= 4;
-        if (TEXTURES[index] == null)
-        {
+        if (TEXTURES[index] == null) {
             String path = FOLDER + "dragon_fruit_drake/";
-            path += ((index & 2) != 0)? "child" : ((index & 1) != 0)? "female" : "male";
+            path += ((index & 2) != 0) ? "child" : ((index & 1) != 0) ? "female" : "male";
             if ((index & 4) != 0) path += "_spe";
             return TEXTURES[index] = Wyrmroost.id(path + "_leaves.png");
         }
         return TEXTURES[index];
     }
 
-    public ResourceLocation getBodyTexture(DragonFruitDrakeEntity entity)
-    {
-        return entity.isHatchling()? GRAY_SCALE_CHILD : GRAY_SCALE;
+    public ResourceLocation getBodyTexture(DragonFruitDrakeEntity entity) {
+        return entity.isHatchling() ? GRAY_SCALE_CHILD : GRAY_SCALE;
     }
 
-    public static int getColorByAge(DragonFruitDrakeEntity entity)
-    {
-        int to = entity.getVariant() == -1? 0xD08C21 : 0xFF0054;
+    public static int getColorByAge(DragonFruitDrakeEntity entity) {
+        int to = entity.getVariant() == -1 ? 0xD08C21 : 0xFF0054;
         return lerp(entity.ageProgress(), 0x23731C, to);
     }
 
-    private static int lerp(float amount, int a, int b)
-    {
+    private static int lerp(float amount, int a, int b) {
         int ar = a >> 16;
         int ag = a >> 8 & 0xff;
         int ab = a & 0xff;
@@ -409,20 +399,17 @@ public class DragonFruitDrakeModel extends DragonEntityModel<DragonFruitDrakeEnt
     }
 
     @Override
-    public float getShadowRadius(DragonFruitDrakeEntity entity)
-    {
+    public float getShadowRadius(DragonFruitDrakeEntity entity) {
         return 1.15f;
     }
 
     @Override
-    public void setupAnim(DragonFruitDrakeEntity entity, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_)
-    {
+    public void setupAnim(DragonFruitDrakeEntity entity, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
         reset();
         animator().tick(entity, this, partialTicks);
     }
 
-    public void biteAnimation()
-    {
+    public void biteAnimation() {
 
     }
 }

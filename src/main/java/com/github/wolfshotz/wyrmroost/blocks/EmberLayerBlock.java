@@ -14,10 +14,8 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
 
-public class EmberLayerBlock extends SnowBlock
-{
-    public EmberLayerBlock()
-    {
+public class EmberLayerBlock extends SnowBlock {
+    public EmberLayerBlock() {
         super(AbstractBlock.Properties.of(Material.STONE, MaterialColor.NETHER)
                 .lightLevel(s -> 3)
                 .randomTicks()
@@ -31,14 +29,12 @@ public class EmberLayerBlock extends SnowBlock
     // inherit ember block behaviours
 
     @Override
-    public void stepOn(World level, BlockPos pos, Entity stepping)
-    {
+    public void stepOn(World level, BlockPos pos, Entity stepping) {
         WRBlocks.EMBER_BLOCK.get().stepOn(level, pos, stepping);
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld level, BlockPos pos, Random rng)
-    {
+    public void randomTick(BlockState state, ServerWorld level, BlockPos pos, Random rng) {
         WRBlocks.EMBER_BLOCK.get().randomTick(state, level, pos, rng);
     }
 }

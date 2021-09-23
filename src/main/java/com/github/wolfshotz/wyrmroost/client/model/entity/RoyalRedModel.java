@@ -12,8 +12,7 @@ import net.minecraft.util.ResourceLocation;
  * WRRoyalRed - Ukan
  * Created using Tabula 8.0.0
  */
-public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
-{
+public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity> {
     public static final ResourceLocation[] TEXTURES = new ResourceLocation[20];
 
     public WRModelRenderer body1;
@@ -129,8 +128,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     public WRModelRenderer[] tails;
     public WRModelRenderer[] neck;
 
-    public RoyalRedModel()
-    {
+    public RoyalRedModel() {
         this.texWidth = 200;
         this.texHeight = 200;
         this.neck3 = new WRModelRenderer(this, 77, 0);
@@ -682,13 +680,13 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         this.body2.addChild(this.body1);
         this.tail8.addChild(this.tailspikeL1);
 
-        this.tails = new WRModelRenderer[] {tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8};
-        this.neck = new WRModelRenderer[] {neck1, neck2, neck3, head};
-        this.wings = new WRModelRenderer[][] {
+        this.tails = new WRModelRenderer[]{tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8};
+        this.neck = new WRModelRenderer[]{neck1, neck2, neck3, head};
+        this.wings = new WRModelRenderer[][]{
                 {wingR1, wingR2, palmR_1, fingerR1part1, fingerR1part2, fingerR2part1, fingerR2part2, fingerR3part1, fingerR3part2, fingerR4part1, fingerR4part2, membraneR1, membraneR2, membraneR3, membraneR4, membraneR5, membraneR6, membraneR7},
                 {wingL1, wingL2, palmL_1, fingerL1part1, fingerL1part2, fingerL2part1, fingerL2part2, fingerL3part1, fingerL3part2, fingerL4part1, fingerL4part2, membraneL1, membraneL2, membraneL3, membraneL4, membraneL5, membraneL6, membraneL7}
         };
-        this.toes = new WRModelRenderer[][] {
+        this.toes = new WRModelRenderer[][]{
                 {toe1R, toe2R, toe3R},
                 {toe1L, toe2L, toe3L}
         };
@@ -697,27 +695,23 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(RoyalRedEntity entity)
-    {
-        int index = entity.isHatchling()? 2 : entity.isMale()? 0 : 1;
+    public ResourceLocation getTexture(RoyalRedEntity entity) {
+        int index = entity.isHatchling() ? 2 : entity.isMale() ? 0 : 1;
         if (entity.getVariant() == -1) index |= 4;
-        if (TEXTURES[index] == null)
-        {
+        if (TEXTURES[index] == null) {
             String path = FOLDER + "royal_red/";
-            path += ((index & 2) != 0)? "child" : ((index & 1) != 0)? "female" : "male";
+            path += ((index & 2) != 0) ? "child" : ((index & 1) != 0) ? "female" : "male";
             if ((index & 4) != 0) path += "_spe";
             return TEXTURES[index] = Wyrmroost.id(path + ".png");
         }
         return TEXTURES[index];
     }
 
-    public ResourceLocation getEyesTexture(RoyalRedEntity entity)
-    {
+    public ResourceLocation getEyesTexture(RoyalRedEntity entity) {
         int index = 8;
         if (entity.isHatchling()) index |= 2;
         if (entity.getVariant() == -1) index |= 4;
-        if (TEXTURES[index] == null)
-        {
+        if (TEXTURES[index] == null) {
             String path = FOLDER + "royal_red/";
             if ((index & 2) != 0) path += "child_";
             if ((index & 4) != 0) path += "spe_";
@@ -727,34 +721,30 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
     @Override
-    public float getShadowRadius(RoyalRedEntity entity)
-    {
+    public float getShadowRadius(RoyalRedEntity entity) {
         return 2.5f;
     }
 
     @Override
-    public void scale(RoyalRedEntity entity, MatrixStack ms, float partialTicks)
-    {
+    public void scale(RoyalRedEntity entity, MatrixStack ms, float partialTicks) {
         super.scale(entity, ms, partialTicks);
         ms.scale(3.6f, 3.6f, 3.6f);
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha)
-    {
+    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
         body2.render(ms, buffer, light, overlay, red, green, blue, alpha);
     }
 
     @Override
-    public void postProcess(RoyalRedEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
-    {
-        if (!entity.isSleeping() && !entity.isKnockedOut() && entity.tickCount % 200 > 3) renderEyes(getEyesTexture(entity), ms, buffer);
+    public void postProcess(RoyalRedEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks) {
+        if (!entity.isSleeping() && !entity.isKnockedOut() && entity.tickCount % 200 > 3)
+            renderEyes(getEyesTexture(entity), ms, buffer);
         renderArmorOverlay(ms, buffer, light);
     }
 
     @Override
-    public void setupAnim(RoyalRedEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
-    {
+    public void setupAnim(RoyalRedEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch) {
         float flightTime = entity.flightTimer.get(partialTicks);
         float sitTime = entity.sitTimer.get(partialTicks);
         float sleepTime = entity.sleepTimer.get(partialTicks);
@@ -768,13 +758,11 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         reset();
         animator().tick(entity, this, partialTicks);
 
-        if (flightDelta > 0)
-        {
+        if (flightDelta > 0) {
             flap(wingR1, 0.1f, 1f, false, 0, 0, limbSwing, flightDelta);
         }
 
-        if (walkDelta > 0)
-        {
+        if (walkDelta > 0) {
             body2.y += bob(0.8f, 1f, false, limbSwing, walkDelta);
             body2.yRot += -limbSwing(0.4f, -0.1f, 0, 0, limbSwing, walkDelta);
 
@@ -789,8 +777,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
 
             float rightToes = limbSwing(0.4f, -0.6f, 0.25f, 0.6f, limbSwing, walkDelta);
             float leftToes = -limbSwing(0.4f, -0.6f, 0.25f, -0.6f, limbSwing, walkDelta);
-            for (int i = 0; i < toes[0].length; i++)
-            {
+            for (int i = 0; i < toes[0].length; i++) {
                 toes[0][i].xRot = rightToes;
                 toes[1][i].xRot = leftToes;
             }
@@ -803,8 +790,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         }
 
         float breath = entity.breathTimer.get(partialTicks);
-        if (breath > 0)
-        {
+        if (breath > 0) {
             jaw.xRot += 0.45 * breath;
             snout.xRot -= 0.55 * breath;
         }
@@ -817,11 +803,9 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         faceTarget(yaw, pitch, 1f, neck);
     }
 
-    private void flightPositions(float time)
-    {
+    private void flightPositions(float time) {
         setTime(time);
-        for (int i = 0; i < wings[0].length; i++)
-        {
+        for (int i = 0; i < wings[0].length; i++) {
             // from back-front perspective
             WRModelRenderer right = wings[0][i]; // grounded positioned wings
             WRModelRenderer left = wings[1][i]; // flight positioned wings
@@ -833,8 +817,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
 
         if (time == 0) return;
 
-        for (WRModelRenderer part : neck)
-        {
+        for (WRModelRenderer part : neck) {
             part.xRot *= 1 - time;
         }
 
@@ -851,12 +834,10 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         rotate(footR, 1f, 0, 0);
     }
 
-    private void sitPositions(float time)
-    {
+    private void sitPositions(float time) {
         setTime(time);
 
-        if (entity.isJuvenile())
-        {
+        if (entity.isJuvenile()) {
             rotate(body2, -0.6f, 0.0f, 0.0f);
             move(body2, 0.0f, 6.9f, 0.0f);
             rotate(leg1L, -0.9f, -0.4f, -0.2f);
@@ -877,9 +858,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
             rotate(tail1, 0.35f, 0.0f, 0.0f);
             rotate(tail2, 0.075f, 0.0f, 0.0f);
             rotate(tail3, 0.05f, 0.0f, 0.0f);
-        }
-        else
-        {
+        } else {
             rotate(body2, -1.05f, 0, 0);
             move(body2, 0, 6f, 0);
 
@@ -910,8 +889,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
             rotate(leg2R, 0.75f, 0, 0);
             rotate(leg3R, -0.55f, 0, 0);
 
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 rotate(toes[0][i], 0.5f, 0, 0);
                 rotate(toes[1][i], 0.5f, 0, 0);
             }
@@ -921,8 +899,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         }
     }
 
-    public void sleepPositions(float time)
-    {
+    public void sleepPositions(float time) {
         setTime(time);
 
         move(body2, 0.0f, 10.0f, 0.0f);
@@ -962,8 +939,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
 
-    private void knockoutPositions(float time)
-    {
+    private void knockoutPositions(float time) {
         setTime(time);
 
         move(body2, 0.0f, 10.0f, 0.0f);
@@ -1006,18 +982,15 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         rotate(membraneR2, 0.25f, -0.4f, 0.0f);
     }
 
-    public void roarAnimation()
-    {
+    public void roarAnimation() {
 
     }
 
-    public void slapAttackAnimation()
-    {
+    public void slapAttackAnimation() {
 
     }
 
-    public void biteAttackAnimation()
-    {
+    public void biteAttackAnimation() {
 
     }
 }

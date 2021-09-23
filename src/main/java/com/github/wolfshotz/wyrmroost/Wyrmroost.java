@@ -7,14 +7,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Wyrmroost
-{
+public class Wyrmroost {
     public static final String MOD_ID = "wyrmroost";
     public static final Logger LOG = LogManager.getLogger(MOD_ID);
     public static final SimpleChannel NETWORK = buildChannel();
 
-    public Wyrmroost()
-    {
+    public Wyrmroost() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         CommonEvents.init();
@@ -36,8 +34,7 @@ public class Wyrmroost
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WRConfig.SERVER);
     }
 
-    private static SimpleChannel buildChannel()
-    {
+    private static SimpleChannel buildChannel() {
         final String PROTOCOL_VERSION = "1.0";
         final SimpleChannel network = NetworkRegistry.ChannelBuilder
                 .named(id("network"))
@@ -57,8 +54,7 @@ public class Wyrmroost
         return network;
     }
 
-    public static ResourceLocation id(String path)
-    {
+    public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID, path);
     }
 }

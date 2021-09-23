@@ -48,10 +48,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
  * <p>
  * Manually add listeners
  */
-public class CommonEvents
-{
-    public static void init()
-    {
+public class CommonEvents {
+    public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -73,8 +71,7 @@ public class CommonEvents
     //       Mod Bus
     // ====================
 
-    public static void commonSetup(final FMLCommonSetupEvent event)
-    {
+    public static void commonSetup(final FMLCommonSetupEvent event) {
         IAnimatable.registerCapability();
 
         event.enqueueWork(() ->
@@ -90,12 +87,9 @@ public class CommonEvents
     }
 
     @SuppressWarnings("unchecked")
-    public static void bindEntityAttributes(EntityAttributeCreationEvent event)
-    {
-        for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntities.REGISTRY))
-        {
-            if (entry instanceof WREntities)
-            {
+    public static void bindEntityAttributes(EntityAttributeCreationEvent event) {
+        for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntities.REGISTRY)) {
+            if (entry instanceof WREntities) {
                 WREntities<?> e = (WREntities<?>) entry;
                 if (e.attributes != null) event.put(((WREntities<LivingEntity>) e), e.attributes.build());
             }
@@ -104,10 +98,8 @@ public class CommonEvents
     }
 
     @Deprecated // todo: remove in 1.17
-    public static void remap(RegistryEvent.MissingMappings<Item> event)
-    {
-        for (RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings(Wyrmroost.MOD_ID))
-        {
+    public static void remap(RegistryEvent.MissingMappings<Item> event) {
+        for (RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings(Wyrmroost.MOD_ID)) {
             if (mapping.key.equals(Wyrmroost.id("dragon_staff"))) mapping.remap(WRItems.TARRAGON_TOME.get());
         }
     }
@@ -116,8 +108,7 @@ public class CommonEvents
     //      Forge Bus
     // =====================
 
-    public static void debugStick(PlayerInteractEvent.RightClickItem event)
-    {
+    public static void debugStick(PlayerInteractEvent.RightClickItem event) {
         if (!WRConfig.DEBUG_MODE.get()) return;
         PlayerEntity player = event.getPlayer();
         ItemStack stack = player.getItemInHand(event.getHand());
@@ -125,8 +116,7 @@ public class CommonEvents
             return;
 
         EntityRayTraceResult ertr = Mafs.clipEntities(event.getPlayer(), 50, 1, null);
-        if (ertr != null)
-        {
+        if (ertr != null) {
             event.setCanceled(true);
             event.setCancellationResult(ActionResultType.SUCCESS);
 
@@ -137,15 +127,13 @@ public class CommonEvents
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
 
             if (player.isShiftKeyDown()) dragon.tame(true, player);
-            else
-            {
+            else {
                 if (dragon.level.isClientSide) /*DebugScreen.open(dragon);*/ AnimateScreen.open(dragon);
             }
         }
     }
 
-    public static void onChangeEquipment(LivingEquipmentChangeEvent event)
-    {
+    public static void onChangeEquipment(LivingEquipmentChangeEvent event) {
         ArmorBase initial;
         if (event.getTo().getItem() instanceof ArmorBase) initial = (ArmorBase) event.getTo().getItem();
         else if (event.getFrom().getItem() instanceof ArmorBase) initial = (ArmorBase) event.getFrom().getItem();
@@ -155,8 +143,7 @@ public class CommonEvents
         initial.applyFullSetBonus(entity, ArmorBase.hasFullSet(entity));
     }
 
-    public static void loadLoot(LootTableLoadEvent event)
-    {
+    public static void loadLoot(LootTableLoadEvent event) {
         if (event.getName().equals(LootTables.ABANDONED_MINESHAFT))
             event.getTable().addPool(LootPool.lootPool()
                     .name("coin_dragon_inject")
@@ -164,8 +151,7 @@ public class CommonEvents
                     .build());
     }
 
-    public static void preCropGrowth(BlockEvent.CropGrowEvent.Pre event)
-    {
+    public static void preCropGrowth(BlockEvent.CropGrowEvent.Pre event) {
         IWorld level = event.getWorld();
         BlockPos pos = event.getPos();
         if (level.getBiomeName(pos).get() == WRWorld.FROST_CREVASSE && level.getBrightness(LightType.BLOCK, pos) <= 11)

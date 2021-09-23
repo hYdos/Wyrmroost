@@ -20,53 +20,42 @@ import java.util.List;
 /**
  * Helper class used to help register playerArmor items
  */
-public class ArmorBase extends ArmorItem
-{
-    public ArmorBase(ArmorMaterials material, EquipmentSlotType equipType)
-    {
+public class ArmorBase extends ArmorItem {
+    public ArmorBase(ArmorMaterials material, EquipmentSlotType equipType) {
         super(material, equipType, WRItems.builder().rarity(material.getRarity()));
     }
 
     @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type)
-    {
-        int layer = slot == EquipmentSlotType.LEGS? 2 : 1;
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
+        int layer = slot == EquipmentSlotType.LEGS ? 2 : 1;
         return Wyrmroost.MOD_ID + ":textures/models/armor/" + this.material.getName() + "_layer_" + layer + ".png";
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World level, List<ITextComponent> lines, ITooltipFlag flags)
-    {
+    public void appendHoverText(ItemStack stack, @Nullable World level, List<ITextComponent> lines, ITooltipFlag flags) {
         super.appendHoverText(stack, level, lines, flags);
         lines.add(new TranslationTextComponent("item.wyrmroost.armors.set", new TranslationTextComponent("item.wyrmroost.armors." + material.getName()).withStyle(((ArmorMaterials) material).getRarity().color)));
 
-        if (hasDescription())
-        {
+        if (hasDescription()) {
             lines.add(new StringTextComponent(""));
             lines.add(new TranslationTextComponent(String.format("item.wyrmroost.armors.%s.desc", material.getName().toLowerCase())));
         }
     }
 
-    protected boolean hasDescription()
-    {
+    protected boolean hasDescription() {
         return false;
     }
 
-    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet)
-    {
+    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet) {
     }
 
-    public static boolean hasFullSet(LivingEntity entity)
-    {
+    public static boolean hasFullSet(LivingEntity entity) {
         IArmorMaterial prev = null;
-        for (ItemStack stack : entity.getArmorSlots())
-        {
-            if (stack.getItem() instanceof ArmorItem)
-            {
+        for (ItemStack stack : entity.getArmorSlots()) {
+            if (stack.getItem() instanceof ArmorItem) {
                 IArmorMaterial now = ((ArmorItem) stack.getItem()).getMaterial();
-                if (now == prev || prev == null)
-                {
+                if (now == prev || prev == null) {
                     prev = now;
                     continue;
                 }

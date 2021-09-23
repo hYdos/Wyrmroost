@@ -41,31 +41,26 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class SoulCrystalEntity extends ProjectileItemEntity
-{
+public class SoulCrystalEntity extends ProjectileItemEntity {
     public static final String DATA_DRAGON = "DragonData";
     public static final byte BREAK_EVENT = 1;
 
-    public SoulCrystalEntity(EntityType<? extends ProjectileItemEntity> type, World world)
-    {
+    public SoulCrystalEntity(EntityType<? extends ProjectileItemEntity> type, World world) {
         super(type, world);
     }
 
-    public SoulCrystalEntity(ItemStack stack, LivingEntity thrower, World world)
-    {
+    public SoulCrystalEntity(ItemStack stack, LivingEntity thrower, World world) {
         super(WREntities.SOUL_CRYSTAL.get(), thrower, world);
         setItem(stack);
     }
 
     @Override
-    protected Item getDefaultItem()
-    {
+    protected Item getDefaultItem() {
         return WRItems.SOUL_CRYSTAL.get();
     }
 
     @Override
-    protected void onHit(RayTraceResult result)
-    {
+    protected void onHit(RayTraceResult result) {
         remove();
         Entity thrower = getOwner();
         ItemStack stack = getItem();
@@ -78,8 +73,7 @@ public class SoulCrystalEntity extends ProjectileItemEntity
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult result)
-    {
+    protected void onHitEntity(EntityRayTraceResult result) {
         super.onHitEntity(result);
         Entity thrower = getOwner();
         ItemStack stack = getItem();
@@ -87,37 +81,30 @@ public class SoulCrystalEntity extends ProjectileItemEntity
     }
 
     @Override
-    public void handleEntityEvent(byte event)
-    {
+    public void handleEntityEvent(byte event) {
 
-        if (event == BREAK_EVENT)
-        {
+        if (event == BREAK_EVENT) {
             ModUtils.playLocalSound(level, blockPosition(), SoundEvents.GLASS_BREAK, 1f, 1.75f);
             ItemParticleData data = new ItemParticleData(ParticleTypes.ITEM, getItem());
             for (int i = 0; i < 8; ++i)
                 level.addParticle(data, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.25, random.nextDouble() * 0.15, Mafs.nextDouble(random) * 0.25);
-        }
-        else super.handleEntityEvent(event);
+        } else super.handleEntityEvent(event);
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static boolean containsDragon(ItemStack stack)
-    {
+    public static boolean containsDragon(ItemStack stack) {
         return stack.hasTag() && stack.getTag().contains(DATA_DRAGON);
     }
 
-    public static boolean isSuitableEntity(Entity entity)
-    {
+    public static boolean isSuitableEntity(Entity entity) {
         return entity instanceof TameableEntity && entity.getType().is(WREntities.Tags.SOUL_BEARERS);
     }
 
-    public static ActionResultType captureDragon(@Nullable PlayerEntity player, World level, ItemStack stack, Entity target)
-    {
+    public static ActionResultType captureDragon(@Nullable PlayerEntity player, World level, ItemStack stack, Entity target) {
         if (containsDragon(stack)) return ActionResultType.PASS;
         if (!isSuitableEntity(target)) return fail(player, "not_suitable");
         TameableEntity dragon = (TameableEntity) target;
@@ -139,8 +126,7 @@ public class SoulCrystalEntity extends ProjectileItemEntity
         return ActionResultType.SUCCESS;
     }
 
-    public static ActionResultType releaseDragon(World level, PlayerEntity player, ItemStack stack, BlockPos pos, Direction direction)
-    {
+    public static ActionResultType releaseDragon(World level, PlayerEntity player, ItemStack stack, BlockPos pos, Direction direction) {
         if (!containsDragon(stack)) return ActionResultType.PASS;
 
         CompoundNBT tag = stack.getTag().getCompound(DATA_DRAGON);
@@ -148,8 +134,7 @@ public class SoulCrystalEntity extends ProjectileItemEntity
         TameableEntity dragon;
 
         // just in case...
-        if (type == null || (dragon = (TameableEntity) type.create(level)) == null)
-        {
+        if (type == null || (dragon = (TameableEntity) type.create(level)) == null) {
             Wyrmroost.LOG.error("Something went wrong summoning from a SoulCrystal!");
             return ActionResultType.FAIL;
         }
@@ -168,8 +153,7 @@ public class SoulCrystalEntity extends ProjectileItemEntity
             return fail(player, "fail");
 
         // Spawn the entity on the server side only
-        if (!level.isClientSide)
-        {
+        if (!level.isClientSide) {
             // no conflicting id's!
             UUID id = dragon.getUUID();
             dragon.deserializeNBT(tag);
@@ -183,18 +167,17 @@ public class SoulCrystalEntity extends ProjectileItemEntity
 
             float thiccness = dragon.getBbWidth() + dragon.getBbWidth();
             dragon.addEffect(new EffectInstance(WREffects.SOUL_WEAKNESS.get(), (int) thiccness * 200));
-            if (!player.abilities.instabuild && thiccness > 5) stack.hurt((int) (thiccness * 0.675f), level.random, (ServerPlayerEntity) player);
+            if (!player.abilities.instabuild && thiccness > 5)
+                stack.hurt((int) (thiccness * 0.675f), level.random, (ServerPlayerEntity) player);
         }
 
         return ActionResultType.sidedSuccess(level.isClientSide);
     }
 
-    public static void restoreStack(World level, @Nullable LivingEntity player, Vector3d origin, ItemStack stack)
-    {
+    public static void restoreStack(World level, @Nullable LivingEntity player, Vector3d origin, ItemStack stack) {
         if (player == null)
             InventoryHelper.dropItemStack(level, origin.x(), origin.y(), origin.z(), stack);
-        else
-        {
+        else {
             ItemEntity entity = new ItemEntity(level, origin.x(), origin.y(), origin.z(), stack);
             double x = player.getX() - origin.x();
             double y = player.getY() - origin.y() + 0.675;
@@ -204,8 +187,7 @@ public class SoulCrystalEntity extends ProjectileItemEntity
         }
     }
 
-    private static ActionResultType fail(PlayerEntity player, String message)
-    {
+    private static ActionResultType fail(PlayerEntity player, String message) {
         player.displayClientMessage(new TranslationTextComponent("item.wyrmroost.soul_crystal." + message).withStyle(TextFormatting.RED), true);
         return ActionResultType.FAIL;
     }

@@ -9,33 +9,26 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SGGlidePacket
-{
+public class SGGlidePacket {
     private final boolean gliding;
 
-    public SGGlidePacket(PacketBuffer buffer)
-    {
+    public SGGlidePacket(PacketBuffer buffer) {
         this.gliding = buffer.readBoolean();
     }
 
-    public SGGlidePacket(boolean gliding)
-    {
+    public SGGlidePacket(boolean gliding) {
         this.gliding = gliding;
     }
 
-    public void encode(PacketBuffer buf)
-    {
+    public void encode(PacketBuffer buf) {
         buf.writeBoolean(gliding);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> context)
-    {
+    public boolean handle(Supplier<NetworkEvent.Context> context) {
         ServerPlayerEntity reciever = context.get().getSender();
-        if (reciever != null && !reciever.getPassengers().isEmpty())
-        {
+        if (reciever != null && !reciever.getPassengers().isEmpty()) {
             Entity entity = reciever.getPassengers().get(0);
-            if (entity instanceof SilverGliderEntity)
-            {
+            if (entity instanceof SilverGliderEntity) {
                 ((SilverGliderEntity) entity).isGliding = gliding;
                 return true;
             }
@@ -43,8 +36,7 @@ public class SGGlidePacket
         return false;
     }
 
-    public static void send(boolean gliding)
-    {
+    public static void send(boolean gliding) {
         Wyrmroost.NETWORK.sendToServer(new SGGlidePacket(gliding));
     }
 }

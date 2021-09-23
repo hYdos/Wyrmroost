@@ -14,12 +14,10 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class LDWyrmItem extends Item
-{
+public class LDWyrmItem extends Item {
     public static final String DATA_CONTENTS = "DesertWyrm"; // Should ALWAYS be a compound. If it throws a cast class exception SOMETHING fucked up.
 
-    public LDWyrmItem()
-    {
+    public LDWyrmItem() {
         super(WRItems.builder());
 
         if (ModUtils.isClient())
@@ -31,17 +29,13 @@ public class LDWyrmItem extends Item
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context)
-    {
+    public ActionResultType useOn(ItemUseContext context) {
         ItemStack stack = context.getItemInHand();
-        if (stack.hasTag())
-        {
+        if (stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
-            if (tag.contains(DATA_CONTENTS))
-            {
+            if (tag.contains(DATA_CONTENTS)) {
                 World level = context.getLevel();
-                if (!level.isClientSide)
-                {
+                if (!level.isClientSide) {
                     BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                     CompoundNBT contents = tag.getCompound(DATA_CONTENTS);
                     LesserDesertwyrmEntity entity = WREntities.LESSER_DESERTWYRM.get().create(level);

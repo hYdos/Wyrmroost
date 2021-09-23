@@ -11,27 +11,22 @@ import net.minecraft.world.gen.feature.ReplaceBlockConfig;
 
 import java.util.Random;
 
-public class NoExposureReplacementFeature extends Feature<ReplaceBlockConfig>
-{
-    public NoExposureReplacementFeature()
-    {
+public class NoExposureReplacementFeature extends Feature<ReplaceBlockConfig> {
+    public NoExposureReplacementFeature() {
         super(ReplaceBlockConfig.CODEC);
     }
 
     @Override
-    public boolean place(ISeedReader level, ChunkGenerator chunkGenerator, Random random, BlockPos pos, ReplaceBlockConfig config)
-    {
+    public boolean place(ISeedReader level, ChunkGenerator chunkGenerator, Random random, BlockPos pos, ReplaceBlockConfig config) {
         if (level.getBlockState(pos).is(config.target.getBlock()) && checkExposure(level, pos))
             level.setBlock(pos, config.state, 2);
 
         return true;
     }
 
-    private static boolean checkExposure(ISeedReader level, BlockPos initialPos)
-    {
+    private static boolean checkExposure(ISeedReader level, BlockPos initialPos) {
         BlockPos.Mutable pos = new BlockPos.Mutable();
-        for (Direction direction : ModUtils.DIRECTIONS)
-        {
+        for (Direction direction : ModUtils.DIRECTIONS) {
             BlockState state = level.getBlockState(pos.setWithOffset(initialPos, direction));
             if (state.isAir(level, pos)) return false;
         }

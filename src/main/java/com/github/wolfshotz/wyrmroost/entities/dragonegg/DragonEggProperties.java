@@ -6,8 +6,7 @@ import net.minecraft.entity.EntityType;
 
 import java.util.function.Predicate;
 
-public class DragonEggProperties
-{
+public class DragonEggProperties {
     private final EntitySize size;
     private final int hatchTime;
     private Predicate<DragonEggEntity> conditions = e -> true;
@@ -17,8 +16,7 @@ public class DragonEggProperties
      * @param height    Height of the egg (y size)
      * @param hatchTime the hatch time, in game ticks
      */
-    public DragonEggProperties(float width, float height, int hatchTime)
-    {
+    public DragonEggProperties(float width, float height, int hatchTime) {
         this.size = EntitySize.fixed(width, height);
         this.hatchTime = hatchTime;
     }
@@ -26,16 +24,14 @@ public class DragonEggProperties
     /**
      * Get the size of the egg
      */
-    public EntitySize getDimensions()
-    {
+    public EntitySize getDimensions() {
         return size;
     }
 
     /**
      * Get the hatch time of the egg
      */
-    public int getHatchTime()
-    {
+    public int getHatchTime() {
         return hatchTime;
     }
 
@@ -43,16 +39,14 @@ public class DragonEggProperties
      * Gets the growth time for the dragon
      * This is typically just doubled the hatch time as a negative value (for some reason non adults are defined as non-positives)
      */
-    public int getGrowthTime()
-    {
+    public int getGrowthTime() {
         return -hatchTime * 2;
     }
 
     /**
      * Get the conditions the egg has to be under to continue hatching
      */
-    public boolean testConditions(DragonEggEntity egg)
-    {
+    public boolean testConditions(DragonEggEntity egg) {
         return conditions.test(egg);
     }
 
@@ -60,8 +54,7 @@ public class DragonEggProperties
      * Set custom conditions this egg has to be under to hatch
      * Default: none. always return true.
      */
-    public DragonEggProperties setConditions(Predicate<DragonEggEntity> conditions)
-    {
+    public DragonEggProperties setConditions(Predicate<DragonEggEntity> conditions) {
         this.conditions = conditions;
         return this;
     }
@@ -70,8 +63,7 @@ public class DragonEggProperties
      * Helper method to retrieve the egg properties from the appropriate EntityType.
      * Helps to alleviate needing to cast or null check multiple times.
      */
-    public static DragonEggProperties get(EntityType<?> type)
-    {
+    public static DragonEggProperties get(EntityType<?> type) {
         DragonEggProperties props = ((WREntities<?>) type).eggProperties;
         if (props == null)
             throw new NullPointerException(String.format("Missing Egg Properties for entity: %s, Wolf did a hickup go scream at him", type.getRegistryName()));

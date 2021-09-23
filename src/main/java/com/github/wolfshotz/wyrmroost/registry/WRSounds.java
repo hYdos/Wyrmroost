@@ -10,8 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
-public class WRSounds
-{
+public class WRSounds {
     public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Wyrmroost.MOD_ID);
 
     public static final RegistryObject<SoundEvent> WING_FLAP = entity("wings.flap");
@@ -67,23 +66,19 @@ public class WRSounds
     public static final RegistryObject<SoundEvent> MUSIC_ASHEN_DESERT = register("music.wyrmroost.ashen_desert");
     public static final RegistryObject<SoundEvent> MUSIC_TINCTURE_WEALD = register("music.wyrmroost.tincture_weald");
 
-    public static RegistryObject<SoundEvent> register(String name)
-    {
+    public static RegistryObject<SoundEvent> register(String name) {
         return REGISTRY.register(name, () -> new SoundEvent(Wyrmroost.id(name)));
     }
 
-    public static RegistryObject<SoundEvent> entity(String name)
-    {
+    public static RegistryObject<SoundEvent> entity(String name) {
         return register("entity." + name);
     }
 
-    public static class Types
-    {
+    public static class Types {
         public static final SoundType MULCH = blockSound(1, 1, MULCH_SOFT, MULCH_HARD);
         public static final SoundType FROSTED_GRASS = blockSound(1, 1, FROSTED_GRASS_SOFT, FROSTED_GRASS_HARD);
 
-        private static SoundType blockSound(float volume, float pitch, Supplier<SoundEvent> soft, Supplier<SoundEvent> hard)
-        {
+        private static SoundType blockSound(float volume, float pitch, Supplier<SoundEvent> soft, Supplier<SoundEvent> hard) {
             return new ForgeSoundType(volume, pitch, soft, hard, soft, hard, hard);
         }
     }

@@ -20,33 +20,25 @@ import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 
-public class DefaultBookAction implements BookAction
-{
+public class DefaultBookAction implements BookAction {
     @Override
-    public ActionResultType rightClick(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack)
-    {
+    public ActionResultType rightClick(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
         boolean client = player.level.isClientSide;
-        if (dragon != null)
-        {
+        if (dragon != null) {
             if (!client) BookContainer.open((ServerPlayerEntity) player, dragon);
-        }
-        else if ((dragon = clip(player)) != null)
-        {
+        } else if ((dragon = clip(player)) != null) {
             TarragonTomeItem.bind(dragon, stack);
-            if (client)
-            {
+            if (client) {
                 ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 0.75f, 2f);
                 ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundCategory.PLAYERS, 0.75f, 1f);
             }
-        }
-        else if (client) TarragonTomeScreen.open(player, stack);
+        } else if (client) TarragonTomeScreen.open(player, stack);
 
         return ActionResultType.CONSUME;
     }
 
     @Override
-    public void render(@Nullable TameableDragonEntity dragon, MatrixStack ms, float partialTicks)
-    {
+    public void render(@Nullable TameableDragonEntity dragon, MatrixStack ms, float partialTicks) {
         if (dragon == null && (dragon = clip(ClientEvents.getPlayer())) != null)
             RenderHelper.renderEntityOutline(dragon,
                     255,
@@ -56,15 +48,13 @@ public class DefaultBookAction implements BookAction
     }
 
     @Nullable
-    private TameableDragonEntity clip(PlayerEntity player)
-    {
+    private TameableDragonEntity clip(PlayerEntity player) {
         EntityRayTraceResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof TameableDragonEntity && ((TameableDragonEntity) e).isOwnedBy(player));
-        return ertr != null? (TameableDragonEntity) ertr.getEntity() : null;
+        return ertr != null ? (TameableDragonEntity) ertr.getEntity() : null;
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
-    {
+    public String getTranslateKey(@Nullable TameableDragonEntity dragon) {
         return TRANSLATE_PATH + "default";
     }
 }

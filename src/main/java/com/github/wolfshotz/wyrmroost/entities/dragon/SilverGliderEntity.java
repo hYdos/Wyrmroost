@@ -38,8 +38,7 @@ import java.util.Random;
 
 import static net.minecraft.entity.ai.attributes.Attributes.*;
 
-public class SilverGliderEntity extends TameableDragonEntity
-{
+public class SilverGliderEntity extends TameableDragonEntity {
     private static final EntitySerializer<SilverGliderEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Gender", TameableDragonEntity::isMale, TameableDragonEntity::setGender)
             .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant)
@@ -51,20 +50,17 @@ public class SilverGliderEntity extends TameableDragonEntity
     public TemptGoal temptGoal;
     public boolean isGliding; // controlled by player-gliding.
 
-    public SilverGliderEntity(EntityType<? extends TameableDragonEntity> dragon, World level)
-    {
+    public SilverGliderEntity(EntityType<? extends TameableDragonEntity> dragon, World level) {
         super(dragon, level);
     }
 
     @Override
-    public EntitySerializer<SilverGliderEntity> getSerializer()
-    {
+    public EntitySerializer<SilverGliderEntity> getSerializer() {
         return SERIALIZER;
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(FLYING, false);
         entityData.define(GENDER, false);
@@ -73,8 +69,7 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    protected void registerGoals()
-    {
+    protected void registerGoals() {
         super.registerGoals();
 
         goalSelector.addGoal(3, temptGoal = new TemptGoal(this, 0.8d, true, Ingredient.of(ItemTags.FISHES)));
@@ -88,34 +83,30 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    public void aiStep()
-    {
+    public void aiStep() {
         super.aiStep();
 
         if (isGliding && !isRiding()) isGliding = false;
 
-        sitTimer.add((isInSittingPose() || isSleeping())? 0.2f : -0.2f);
-        sleepTimer.add(isSleeping()? 0.05f : -0.1f);
-        flightTimer.add(isFlying() || isGliding()? 0.1f : -0.1f);
+        sitTimer.add((isInSittingPose() || isSleeping()) ? 0.2f : -0.2f);
+        sleepTimer.add(isSleeping() ? 0.05f : -0.1f);
+        flightTimer.add(isFlying() || isGliding() ? 0.1f : -0.1f);
     }
 
     @Override
-    public void rideTick()
-    {
+    public void rideTick() {
         super.rideTick();
 
         if (!(getVehicle() instanceof PlayerEntity)) return;
         PlayerEntity player = (PlayerEntity) getVehicle();
         final boolean FLAG = shouldGlide(player);
 
-        if (level.isClientSide && isGliding != FLAG)
-        {
+        if (level.isClientSide && isGliding != FLAG) {
             SGGlidePacket.send(FLAG);
             isGliding = FLAG;
         }
 
-        if (isGliding)
-        {
+        if (isGliding) {
             Vector3d vec3d = player.getLookAngle().scale(0.3);
             player.setDeltaMovement(player.getDeltaMovement().scale(0.6).add(vec3d.x, Math.min(vec3d.y * 2, 0), vec3d.z));
             player.fallDistance = 0;
@@ -123,8 +114,7 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    public void travel(Vector3d vec3d)
-    {
+    public void travel(Vector3d vec3d) {
         Vector3d look = getLookAngle();
         if (isFlying() && look.y < 0) setDeltaMovement(getDeltaMovement().add(0, look.y * 0.25, 0));
 
@@ -132,15 +122,12 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    public ActionResultType playerInteraction(PlayerEntity player, Hand hand, ItemStack stack)
-    {
+    public ActionResultType playerInteraction(PlayerEntity player, Hand hand, ItemStack stack) {
         ActionResultType result = super.playerInteraction(player, hand, stack);
         if (result.consumesAction()) return result;
 
-        if (!isTame() && isFood(stack))
-        {
-            if (!level.isClientSide && (temptGoal.isRunning() || player.isCreative()))
-            {
+        if (!isTame() && isFood(stack)) {
+            if (!level.isClientSide && (temptGoal.isRunning() || player.isCreative())) {
                 tame(getRandom().nextDouble() < 0.333, player);
                 eat(stack);
                 return ActionResultType.SUCCESS;
@@ -148,8 +135,7 @@ public class SilverGliderEntity extends TameableDragonEntity
             return ActionResultType.CONSUME;
         }
 
-        if (isOwnedBy(player) && player.getPassengers().isEmpty() && !player.isShiftKeyDown() && !isFood(stack) && !isLeashed())
-        {
+        if (isOwnedBy(player) && player.getPassengers().isEmpty() && !player.isShiftKeyDown() && !isFood(stack) && !isLeashed()) {
             startRiding(player, true);
             setOrderedToSit(false);
             clearAI();
@@ -159,8 +145,7 @@ public class SilverGliderEntity extends TameableDragonEntity
         return ActionResultType.PASS;
     }
 
-    public boolean shouldGlide(PlayerEntity player)
-    {
+    public boolean shouldGlide(PlayerEntity player) {
         if (isBaby()) return false;
         if (!player.jumping) return false;
         if (player.abilities.flying) return false;
@@ -172,10 +157,8 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    public void doSpecialEffects()
-    {
-        if (getVariant() == -1 && tickCount % 5 == 0)
-        {
+    public void doSpecialEffects() {
+        if (getVariant() == -1 && tickCount % 5 == 0) {
             double x = getX() + getRandom().nextGaussian();
             double y = getY() + getRandom().nextDouble();
             double z = getZ() + getRandom().nextGaussian();
@@ -184,109 +167,92 @@ public class SilverGliderEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
-    {
+    public EntitySize getDimensions(Pose pose) {
         EntitySize size = getType().getDimensions().scale(getScale());
         if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.87f);
         return size;
     }
 
     @Override
-    public int determineVariant()
-    {
+    public int determineVariant() {
         if (getRandom().nextDouble() < 0.002) return -1;
         return getRandom().nextInt(3);
     }
 
     @Nullable
     @Override
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return WRSounds.ENTITY_SILVERGLIDER_IDLE.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return WRSounds.ENTITY_SILVERGLIDER_HURT.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return WRSounds.ENTITY_SILVERGLIDER_DEATH.get();
     }
 
     @Override
-    public Vector3d getRidingPosOffset(int passengerIndex)
-    {
+    public Vector3d getRidingPosOffset(int passengerIndex) {
         return new Vector3d(0, 1.81, 0.5d);
     }
 
     @Override
-    public boolean shouldFly()
-    {
-        return isRiding()? isGliding() : super.shouldFly();
+    public boolean shouldFly() {
+        return isRiding() ? isGliding() : super.shouldFly();
     }
 
     @Override
-    public int getHeadRotSpeed()
-    {
+    public int getHeadRotSpeed() {
         return 30;
     }
 
     @Override
-    public int getYawRotationSpeed()
-    {
-        return isFlying()? 5 : 75;
+    public int getYawRotationSpeed() {
+        return isFlying() ? 5 : 75;
     }
 
-    public boolean isGliding()
-    {
+    public boolean isGliding() {
         return isGliding;
     }
 
     @Override
-    public boolean isFood(ItemStack stack)
-    {
+    public boolean isFood(ItemStack stack) {
         return stack.getItem().is(ItemTags.FISHES);
     }
 
-    public static boolean getSpawnPlacement(EntityType<SilverGliderEntity> fEntityType, IServerWorld level, SpawnReason spawnReason, BlockPos blockPos, Random random)
-    {
+    public static boolean getSpawnPlacement(EntityType<SilverGliderEntity> fEntityType, IServerWorld level, SpawnReason spawnReason, BlockPos blockPos, Random random) {
         if (spawnReason == SpawnReason.SPAWNER) return true;
         Block block = level.getBlockState(blockPos.below()).getBlock();
         return block == Blocks.AIR || block == Blocks.SAND && level.getRawBrightness(blockPos, 0) > 8;
     }
 
     @Override
-    public Attribute[] getScaledAttributes()
-    {
-        return new Attribute[] {MAX_HEALTH};
+    public Attribute[] getScaledAttributes() {
+        return new Attribute[]{MAX_HEALTH};
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
-    {
+    public static AttributeModifierMap.MutableAttribute getAttributeMap() {
         return MobEntity.createMobAttributes()
                 .add(MAX_HEALTH, 20)
                 .add(MOVEMENT_SPEED, 0.23)
                 .add(FLYING_SPEED, 0.12);
     }
 
-    public class SwoopGoal extends Goal
-    {
+    public class SwoopGoal extends Goal {
         private BlockPos pos;
 
-        public SwoopGoal()
-        {
+        public SwoopGoal() {
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         @Override
-        public boolean canUse()
-        {
+        public boolean canUse() {
             if (!isFlying()) return false;
             if (isRiding()) return false;
             if (getRandom().nextDouble() > 0.001) return false;
@@ -296,14 +262,12 @@ public class SilverGliderEntity extends TameableDragonEntity
         }
 
         @Override
-        public boolean canContinueToUse()
-        {
+        public boolean canContinueToUse() {
             return blockPosition().distSqr(pos) > 8;
         }
 
         @Override
-        public void tick()
-        {
+        public void tick() {
             if (getNavigation().isDone()) getNavigation().moveTo(pos.getX(), pos.getY() + 2, pos.getZ(), 1);
             getLookControl().setLookAt(pos.getX(), pos.getY() + 2, pos.getZ());
         }

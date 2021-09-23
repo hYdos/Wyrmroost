@@ -7,16 +7,13 @@ import net.minecraft.util.math.vector.Vector3d;
 /**
  * Im not actually sure if this is a good solution or not... but it seems to be working a little bit....
  */
-public class BetterPathNavigator extends GroundPathNavigator
-{
-    public BetterPathNavigator(MobEntity entity)
-    {
+public class BetterPathNavigator extends GroundPathNavigator {
+    public BetterPathNavigator(MobEntity entity) {
         super(entity, entity.level);
     }
 
     @Override
-    protected void followThePath()
-    {
+    protected void followThePath() {
         Vector3d pos = getTempMobPos();
         Vector3d pathPos = Vector3d.atBottomCenterOf(path.getNextNodePos());
 
@@ -33,8 +30,7 @@ public class BetterPathNavigator extends GroundPathNavigator
         doStuckDetection(pos);
     }
 
-    private boolean isPathLongEnough(Vector3d entityPosition)
-    {
+    private boolean isPathLongEnough(Vector3d entityPosition) {
         if (path.getNextNodeIndex() + 1 >= path.getNodeCount()) return false;
 
         Vector3d pathPos = Vector3d.atBottomCenterOf(path.getNextNodePos());

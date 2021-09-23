@@ -21,15 +21,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
-public class WRWorld
-{
+public class WRWorld {
     public static final RegistryKey<Dimension> THE_WYRMROOST = RegistryKey.create(Registry.LEVEL_STEM_REGISTRY, Wyrmroost.id("the_wyrmroost"));
 
     public static final RegistryKey<Biome> TINCTURE_WEALD = biomeKey("tincture_weald");
     public static final RegistryKey<Biome> FROST_CREVASSE = biomeKey("frost_crevasse");
 
-    public static void onBiomeLoad(BiomeLoadingEvent event)
-    {
+    public static void onBiomeLoad(BiomeLoadingEvent event) {
         MobSpawnManager.load();
 
         Biome.Category category = event.getCategory();
@@ -43,8 +41,7 @@ public class WRWorld
 
         BiomeGenerationSettingsBuilder settings = event.getGeneration();
 
-        switch (category)
-        {
+        switch (category) {
             case NETHER:
                 settings.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Features.CONFIGURED_RED_GEODE.get());
                 break;
@@ -57,13 +54,11 @@ public class WRWorld
         }
     }
 
-    static RegistryKey<Biome> biomeKey(String name)
-    {
+    static RegistryKey<Biome> biomeKey(String name) {
         return RegistryKey.create(Registry.BIOME_REGISTRY, Wyrmroost.id(name));
     }
 
-    public static class Features
-    {
+    public static class Features {
         public static final DeferredRegister<Feature<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.FEATURES, Wyrmroost.MOD_ID);
 
         public static final RegistryObject<Feature<ReplaceBlockConfig>> NO_EXPOSE_REPLACE = REGISTRY.register("no_expose_replace", NoExposureReplacementFeature::new);
@@ -83,8 +78,7 @@ public class WRWorld
         public static final Lazy<ConfiguredFeature<?, ?>> CONFIGURED_PURPLE_OSERI = configured("purple_oseri", () -> OSERI_TREE.get().configured(OseriTreeFeature.Type.PURPLE));
         public static final Lazy<ConfiguredFeature<?, ?>> CONFIGURED_WHITE_OSERI = configured("white_oseri", () -> OSERI_TREE.get().configured(OseriTreeFeature.Type.WHITE));
 
-        private static RegistryKey<ConfiguredFeature<?, ?>> configured(String id)
-        {
+        private static RegistryKey<ConfiguredFeature<?, ?>> configured(String id) {
             return RegistryKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, Wyrmroost.id(id));
         }
 
@@ -93,8 +87,7 @@ public class WRWorld
          * registry doesn't hold custom ones, and its impossible to get the dynamic registry holding the custom ones.
          */
         @Deprecated
-        private static Lazy<ConfiguredFeature<?, ?>> configured(String id, Supplier<ConfiguredFeature<?, ?>> sup)
-        {
+        private static Lazy<ConfiguredFeature<?, ?>> configured(String id, Supplier<ConfiguredFeature<?, ?>> sup) {
             return Lazy.of(() -> Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, Wyrmroost.id(id), sup.get()));
         }
     }

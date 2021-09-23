@@ -11,15 +11,13 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.EnumSet;
 
-public class DragonBreedGoal extends Goal
-{
+public class DragonBreedGoal extends Goal {
     protected final TameableDragonEntity dragon;
     protected final EntityPredicate predicate;
     protected TameableDragonEntity targetMate;
     protected int spawnBabyDelay;
 
-    public DragonBreedGoal(TameableDragonEntity dragon)
-    {
+    public DragonBreedGoal(TameableDragonEntity dragon) {
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         this.dragon = dragon;
         this.predicate = new EntityPredicate()
@@ -34,12 +32,10 @@ public class DragonBreedGoal extends Goal
      * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
      * method as well.
      */
-    public boolean canUse()
-    {
+    public boolean canUse() {
         if (!dragon.isInLove()) return false;
         int breedLimit = WRConfig.getBreedLimitFor(dragon.getType());
-        if (breedLimit > 0 && dragon.breedCount >= breedLimit)
-        {
+        if (breedLimit > 0 && dragon.breedCount >= breedLimit) {
             dragon.resetLove();
             return false;
         }
@@ -49,16 +45,14 @@ public class DragonBreedGoal extends Goal
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean canContinueToUse()
-    {
+    public boolean canContinueToUse() {
         return targetMate.isAlive() && targetMate.isInLove() && dragon.isInLove() && spawnBabyDelay < 60;
     }
 
     /**
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
-    public void stop()
-    {
+    public void stop() {
         targetMate = null;
         spawnBabyDelay = 0;
     }
@@ -66,8 +60,7 @@ public class DragonBreedGoal extends Goal
     /**
      * Keep ticking a continuous task that has already been started
      */
-    public void tick()
-    {
+    public void tick() {
         dragon.getLookControl().setLookAt(targetMate, 10f, dragon.getYawRotationSpeed());
         dragon.getNavigation().moveTo(targetMate, 1);
         if (++spawnBabyDelay >= 60 && dragon.distanceTo(targetMate) < dragon.getBbWidth() * 2)
@@ -79,8 +72,7 @@ public class DragonBreedGoal extends Goal
      * valid mate found.
      */
     @Nullable
-    protected TameableDragonEntity getNearbyMate()
-    {
+    protected TameableDragonEntity getNearbyMate() {
         return dragon.level.getNearbyEntities(dragon.getClass(), predicate, dragon, dragon.getBoundingBox().inflate(dragon.getBbWidth() * 8))
                 .stream()
                 .min(Comparator.comparingDouble(dragon::distanceToSqr)).orElse(null);

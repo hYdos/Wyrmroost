@@ -20,8 +20,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class DragonProjectileEntity extends Entity implements IEntityAdditionalSpawnData
-{
+public class DragonProjectileEntity extends Entity implements IEntityAdditionalSpawnData {
     @Nullable // Potentially if the dragon is unloaded, or is not synced yet.
     public TameableDragonEntity shooter;
     public Vector3d acceleration;
@@ -29,13 +28,11 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
     public int life;
     public boolean hasCollided;
 
-    protected DragonProjectileEntity(EntityType<?> type, World level)
-    {
+    protected DragonProjectileEntity(EntityType<?> type, World level) {
         super(type, level);
     }
 
-    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, TameableDragonEntity shooter, Vector3d position, Vector3d direction)
-    {
+    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, TameableDragonEntity shooter, Vector3d position, Vector3d direction) {
         super(type, shooter.level);
 
         direction = direction.add(random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset());
@@ -52,10 +49,8 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
     }
 
     @Override
-    public void tick()
-    {
-        if ((!level.isClientSide && (!shooter.isAlive() || tickCount > life || tickCount > getMaxLife())) || !level.hasChunkAt(blockPosition()))
-        {
+    public void tick() {
+        if ((!level.isClientSide && (!shooter.isAlive() || tickCount > life || tickCount > getMaxLife())) || !level.hasChunkAt(blockPosition())) {
             remove();
             return;
         }
@@ -63,17 +58,14 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
         super.tick();
         if (growthRate != 1) refreshDimensions();
 
-        switch (getEffectType())
-        {
-            case RAYTRACE:
-            {
+        switch (getEffectType()) {
+            case RAYTRACE: {
                 RayTraceResult rayTrace = ProjectileHelper.getHitResult(this, this::canImpactEntity);
                 if (rayTrace.getType() != RayTraceResult.Type.MISS && !ForgeEventFactory.onProjectileImpact(this, rayTrace))
                     hit(rayTrace);
                 break;
             }
-            case COLLIDING:
-            {
+            case COLLIDING: {
                 AxisAlignedBB box = getBoundingBox().inflate(0.05);
                 for (Entity entity : level.getEntities(this, box, this::canImpactEntity))
                     onEntityImpact(entity);
@@ -93,8 +85,7 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
         double y = getY() + motion.y;
         double z = getZ() + motion.z;
 
-        if (isInWater())
-        {
+        if (isInWater()) {
             setDeltaMovement(motion.scale(0.95f));
             for (int i = 0; i < 4; ++i)
                 level.addParticle(ParticleTypes.BUBBLE, getX() * 0.25d, getY() * 0.25d, getZ() * 0.25D, motion.x, motion.y, motion.z);
@@ -102,8 +93,7 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
         absMoveTo(x, y, z);
     }
 
-    public boolean canImpactEntity(Entity entity)
-    {
+    public boolean canImpactEntity(Entity entity) {
         if (entity == shooter) return false;
         if (!entity.isAlive()) return false;
         if (!(entity instanceof LivingEntity)) return false;
@@ -112,141 +102,116 @@ public class DragonProjectileEntity extends Entity implements IEntityAdditionalS
         return shooter != null && !entity.isAlliedTo(shooter);
     }
 
-    public void hit(RayTraceResult result)
-    {
+    public void hit(RayTraceResult result) {
         RayTraceResult.Type type = result.getType();
-        if (type == RayTraceResult.Type.BLOCK)
-        {
+        if (type == RayTraceResult.Type.BLOCK) {
             final BlockRayTraceResult brtr = (BlockRayTraceResult) result;
             onBlockImpact(brtr.getBlockPos(), brtr.getDirection());
-        }
-        else if (type == RayTraceResult.Type.ENTITY) onEntityImpact(((EntityRayTraceResult) result).getEntity());
+        } else if (type == RayTraceResult.Type.ENTITY) onEntityImpact(((EntityRayTraceResult) result).getEntity());
     }
 
-    public void onEntityImpact(Entity entity)
-    {
+    public void onEntityImpact(Entity entity) {
     }
 
-    public void onBlockImpact(BlockPos pos, Direction direction)
-    {
+    public void onBlockImpact(BlockPos pos, Direction direction) {
     }
 
     @Override
-    public void setDeltaMovement(Vector3d motionIn)
-    {
+    public void setDeltaMovement(Vector3d motionIn) {
         super.setDeltaMovement(motionIn);
         ProjectileHelper.rotateTowardsMovement(this, 1);
     }
 
     @Override
-    public EntitySize getDimensions(Pose poseIn)
-    {
+    public EntitySize getDimensions(Pose poseIn) {
         if (growthRate == 1) return getType().getDimensions();
         float size = Math.min(getBbWidth() * growthRate, 2.25f);
         return EntitySize.scalable(size, size);
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double distance)
-    {
+    public boolean shouldRenderAtSqrDistance(double distance) {
         double d0 = getBoundingBox().getSize() * 4;
         if (Double.isNaN(d0)) d0 = 4;
         d0 *= 64;
         return distance < d0 * d0;
     }
 
-    public DamageSource getDamageSource(String name)
-    {
+    public DamageSource getDamageSource(String name) {
         return new IndirectEntityDamageSource(name, this, shooter).setProjectile().setScalesWithDifficulty();
     }
 
-    protected EffectType getEffectType()
-    {
+    protected EffectType getEffectType() {
         return EffectType.NONE;
     }
 
-    protected float getMotionFactor()
-    {
+    protected float getMotionFactor() {
         return 0.95f;
     }
 
-    protected double getAccelerationOffset()
-    {
+    protected double getAccelerationOffset() {
         return 0.1;
     }
 
-    protected int getMaxLife()
-    {
+    protected int getMaxLife() {
         return 150;
     }
 
     @Override
-    public boolean isNoGravity()
-    {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    protected boolean isMovementNoisy()
-    {
+    protected boolean isMovementNoisy() {
         return false;
     }
 
     @Override
-    public float getBrightness()
-    {
+    public float getBrightness() {
         return 1f;
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount)
-    {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    public float getPickRadius()
-    {
+    public float getPickRadius() {
         return getBbWidth();
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
     }
 
     @Override // Does not Serialize
-    protected void readAdditionalSaveData(CompoundNBT compound)
-    {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
     }
 
     @Override // Does not Serialize
-    protected void addAdditionalSaveData(CompoundNBT compound)
-    {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buf)
-    {
+    public void writeSpawnData(PacketBuffer buf) {
         buf.writeInt(shooter.getId());
         buf.writeFloat(growthRate);
     }
 
     @Override
-    public void readSpawnData(PacketBuffer buf)
-    {
+    public void readSpawnData(PacketBuffer buf) {
         this.shooter = (TameableDragonEntity) level.getEntity(buf.readInt());
         this.growthRate = buf.readFloat();
     }
 
-    protected enum EffectType
-    {
+    protected enum EffectType {
         NONE,
         RAYTRACE,
         COLLIDING

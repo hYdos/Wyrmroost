@@ -21,19 +21,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
-public class WRItems
-{
-    static final ItemGroup MAIN_ITEM_GROUP = new ItemGroup("wyrmroost")
-    {
+public class WRItems {
+    static final ItemGroup MAIN_ITEM_GROUP = new ItemGroup("wyrmroost") {
         @Override
-        public ItemStack makeIcon()
-        {
+        public ItemStack makeIcon() {
             return new ItemStack(COIN_DRAGON.get());
         }
 
         @Override
-        public void fillItemList(NonNullList<ItemStack> items)
-        {
+        public void fillItemList(NonNullList<ItemStack> items) {
             super.fillItemList(items);
             if (WRConfig.DEBUG_MODE.get())
                 items.add(new ItemStack(Items.STICK).setHoverName(new StringTextComponent("Debug Stick")));
@@ -121,44 +117,36 @@ public class WRItems
     public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = register("diamond_dragon_armor", () -> new DragonArmorItem(8, ArmorMaterial.DIAMOND.getEnchantmentValue()));
     public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = register("netherite_dragon_armor", () -> new DragonArmorItem(10, ArmorMaterial.DIAMOND.getEnchantmentValue()));
 
-    static RegistryObject<Item> register(String name, Supplier<Item> item)
-    {
+    static RegistryObject<Item> register(String name, Supplier<Item> item) {
         return REGISTRY.register(name, item);
     }
 
-    static RegistryObject<Item> register(String name, Food.Builder food)
-    {
+    static RegistryObject<Item> register(String name, Food.Builder food) {
         return register(name, () -> new Item(builder().food(food.build())));
     }
 
-    static RegistryObject<Item> register(String name)
-    {
+    static RegistryObject<Item> register(String name) {
         return REGISTRY.register(name, () -> new Item(builder()));
     }
 
-    public static Item.Properties builder()
-    {
+    public static Item.Properties builder() {
         return new Item.Properties().tab(MAIN_ITEM_GROUP);
     }
 
-    static Food.Builder food(int nutrition, float saturation)
-    {
+    static Food.Builder food(int nutrition, float saturation) {
         return new Food.Builder().nutrition(nutrition).saturationMod(saturation);
     }
 
-    public static class Tags
-    {
+    public static class Tags {
         public static final INamedTag<Item> GEMS_GEODE = forge("gems/geodes");
         public static final INamedTag<Item> DRAGON_MEATS = tag("dragon_meats");
         public static final INamedTag<Item> INGOTS_PLATINUM = forge("ingots/platinum");
 
-        private static INamedTag<Item> tag(String path)
-        {
+        private static INamedTag<Item> tag(String path) {
             return ItemTags.bind(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        private static INamedTag<Item> forge(String path)
-        {
+        private static INamedTag<Item> forge(String path) {
             return ItemTags.bind("forge:" + path);
         }
     }

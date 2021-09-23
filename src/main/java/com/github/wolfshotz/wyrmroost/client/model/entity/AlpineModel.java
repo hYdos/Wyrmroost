@@ -14,8 +14,7 @@ import net.minecraft.util.math.MathHelper;
  * WRAlpineDragonNew - Ukan
  * Created using Tabula 8.0.0
  */
-public class AlpineModel extends DragonEntityModel<AlpineEntity>
-{
+public class AlpineModel extends DragonEntityModel<AlpineEntity> {
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[6];
 
     public WRModelRenderer body1;
@@ -126,8 +125,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
     public final WRModelRenderer[] tailArray;
     private final WRModelRenderer[][] fingerArrays;
 
-    public AlpineModel()
-    {
+    public AlpineModel() {
         this.texWidth = 150;
         this.texHeight = 100;
         this.fin7 = new WRModelRenderer(this, 31, 68);
@@ -654,11 +652,9 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(AlpineEntity entity)
-    {
+    public ResourceLocation getTexture(AlpineEntity entity) {
         int variant = entity.getVariant();
-        if (TEXTURES[variant] == null)
-        {
+        if (TEXTURES[variant] == null) {
             String path = FOLDER + "alpine/body_" + variant;
             return TEXTURES[variant] = Wyrmroost.id(path + ".png");
         }
@@ -666,35 +662,30 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
     }
 
     @Override
-    public void scale(AlpineEntity entity, MatrixStack ms, float partialTicks)
-    {
+    public void scale(AlpineEntity entity, MatrixStack ms, float partialTicks) {
         super.scale(entity, ms, partialTicks);
         ms.scale(2f, 2f, 2f);
         ms.translate(0, 0, -0.2f);
     }
 
     @Override
-    public float getShadowRadius(AlpineEntity entity)
-    {
+    public float getShadowRadius(AlpineEntity entity) {
         return 2f;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
-    {
+    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         body1.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void setupAnim(AlpineEntity entity, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
-    {
+    public void setupAnim(AlpineEntity entity, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch) {
         reset();
         animator().tick(entity, this, partialTicks);
 
         this.bob = bob;
 
-        if (!entity.isSleeping() && !entity.isInSittingPose() && entity.getAnimation() != AlpineEntity.WIND_GUST_ANIMATION)
-        {
+        if (!entity.isSleeping() && !entity.isInSittingPose() && entity.getAnimation() != AlpineEntity.WIND_GUST_ANIMATION) {
             if (entity.isFlying()) // flight
             {
                 chainWave(headArray, globalSpeed - 0.25f, 0.05f, 3, limbSwing, limbSwingAmount);
@@ -718,8 +709,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
                 walk(backleg1L, globalSpeed - 0.25f, 0.075f, true, 0, 0, limbSwing, limbSwingAmount);
                 walk(backleg1R, globalSpeed - 0.25f, 0.075f, true, 0, 0, limbSwing, limbSwingAmount);
 
-                if (entity.getDeltaMovement().y < 0 && entity.getDeltaMovement().length() > 0.1)
-                {
+                if (entity.getDeltaMovement().y < 0 && entity.getDeltaMovement().length() > 0.1) {
                     flap(wing1R, globalSpeed - 0.3f, 0.15f, false, 0, 0, bob, 0.5f);
                     walk(wing1R, globalSpeed + 0.65f, 0.1f, false, 0, 0, bob, 0.5f);
                     flap(wing1L, globalSpeed - 0.3f, 0.15f, true, 0, 0, bob, 0.5f);
@@ -729,8 +719,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
                 boolean wingsDown = wing1R.zRot < 0.8;
                 if (!entity.wingsDown && wingsDown) entity.flapWings();
                 entity.wingsDown = wingsDown;
-            }
-            else // walk cycle
+            } else // walk cycle
             {
                 body1.y += bob(0.8f, 0.2f, false, limbSwing, limbSwingAmount);
 
@@ -768,8 +757,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
         if (entity.flightTimer.get() == 1) body1.zRot = -(netHeadYaw * Mafs.PI / 180f) * 0.4f;
     }
 
-    public void idle(float frame)
-    {
+    public void idle(float frame) {
         chainWave(headArray, globalSpeed - 0.45f, 0.04f, -1, frame, 0.5f);
         if (!entity.isInSittingPose() && !entity.isSleeping())
             chainWave(tailArray, globalSpeed - 0.45f, 0.08f, -3, frame, 0.5f);
@@ -782,8 +770,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
         swing(wing2R, globalSpeed - 0.44f, 0.05f, true, 0, 0, frame, 0.5f);
     }
 
-    public void sit(float frame)
-    {
+    public void sit(float frame) {
         setTime(frame);
 
         move(body1, 0, 4.8f, 0);
@@ -811,14 +798,12 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
         rotate(backfoot2R, 0.8f, 0, 0);
 
         for (int i = 0; i < tailArray.length; i++)
-            rotate(tailArray[i], i > (tailArray.length - 2) / 2? 0.06f : -0.06f, 0, 0);
+            rotate(tailArray[i], i > (tailArray.length - 2) / 2 ? 0.06f : -0.06f, 0, 0);
     }
 
-    public void sleep(float frame)
-    {
+    public void sleep(float frame) {
         setTime(frame);
-        if (frame == 1)
-        {
+        if (frame == 1) {
             eyeL.yRot += 3.1f;
             eyeR.yRot -= 3.1f;
         }
@@ -836,8 +821,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
     }
 
 
-    private void flight(float v)
-    {
+    private void flight(float v) {
         setTime(v);
 
         rotate(neck1, 0.4f, 0, 0);
@@ -885,14 +869,12 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
         rotate(backfoot2R, 0.9f, 0, 0);
     }
 
-    public void roarAnimation()
-    {
+    public void roarAnimation() {
         ModelAnimator animator = animator(); // reduce method calls
 
         animator.startKeyframe(12);
 
-        if (!entity.isFlying())
-        {
+        if (!entity.isFlying()) {
             animator.rotate(neck1, -0.1f, 0, 0)
                     .rotate(neck2, 0.35f, 0, 0)
                     .rotate(neck3, 0.35f, 0, 0)
@@ -917,19 +899,16 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
                     .move(feathers1R, 0, 0, 7.5f)
                     .move(feathers3R, 0, 0, 7.5f);
 
-            for (int i = 0; i < fingerArrays.length; i++)
-            {
-                for (WRModelRenderer finger : fingerArrays[i])
-                {
-                    animator.rotate(finger, 0, i == 1? 0.4f : -0.4f, 0);
+            for (int i = 0; i < fingerArrays.length; i++) {
+                for (WRModelRenderer finger : fingerArrays[i]) {
+                    animator.rotate(finger, 0, i == 1 ? 0.4f : -0.4f, 0);
                 }
             }
         }
 
         animator.rotate(jaw, 0.8f, 0, 0);
         int tick = entity.getAnimationTick();
-        if (tick < 71)
-        {
+        if (tick < 71) {
             chainFlap(headArray, globalSpeed, 0.1f, 2.5, bob, 0.5f);
             chainSwing(headArray, globalSpeed, 0.035f, 1, bob, 0.5f);
         }
@@ -939,8 +918,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
     }
 
 
-    public void windGustAnimation()
-    {
+    public void windGustAnimation() {
         ModelAnimator animator = animator(); // reduce method calls
 
         animator.startKeyframe(5)
@@ -966,8 +944,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
         animator.resetKeyframe(15);
     }
 
-    public void biteAnimation()
-    {
+    public void biteAnimation() {
         animator().startKeyframe(3)
                 .rotate(neck1, -0.3f, 0, 0)
                 .rotate(neck2, 0.1f, 0, 0)

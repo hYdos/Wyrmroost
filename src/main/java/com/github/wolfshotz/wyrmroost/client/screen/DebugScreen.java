@@ -8,27 +8,23 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 
-public class DebugScreen extends Screen
-{
+public class DebugScreen extends Screen {
     public final TameableDragonEntity dragon;
     private boolean paused = true;
 
-    public DebugScreen(TameableDragonEntity dragon)
-    {
+    public DebugScreen(TameableDragonEntity dragon) {
         super(new StringTextComponent("debug_screen"));
 
         this.dragon = dragon;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
         addButton(new Button(0, 0, 50, 20, new StringTextComponent("Pause Game"), b -> paused = !paused));
 
         Animation[] animations = dragon.getAnimations();
         if (animations != null && animations.length > 0)
-            for (int i = 0; i < animations.length; i++)
-            {
+            for (int i = 0; i < animations.length; i++) {
                 Animation animation = animations[i];
                 addButton(new Button((i * 50) + (width / 2) - (animations.length * 25), 200, 50, 12, new StringTextComponent("Anim: " + i), b ->
                 {
@@ -39,11 +35,10 @@ public class DebugScreen extends Screen
     }
 
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
-    {
+    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
         renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
-        String gender = dragon.isMale()? "male" : "female";
+        String gender = dragon.isMale() ? "male" : "female";
 
         drawCenteredString(ms, font, dragon.getDisplayName().getString(), (width / 2), 15, 0xffffff);
         drawCenteredString(ms, font, "isSleeping: " + dragon.isSleeping(), (width / 2) + 50, 50, 0xffffff);
@@ -59,13 +54,11 @@ public class DebugScreen extends Screen
     }
 
     @Override
-    public boolean isPauseScreen()
-    {
+    public boolean isPauseScreen() {
         return paused;
     }
 
-    public static void open(TameableDragonEntity dragon)
-    {
+    public static void open(TameableDragonEntity dragon) {
         Minecraft.getInstance().setScreen(new DebugScreen(dragon));
     }
 }

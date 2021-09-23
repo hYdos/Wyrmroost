@@ -32,19 +32,16 @@ import java.util.Optional;
 
 import static net.minecraft.world.biome.Biome.Category.*;
 
-public class MobSpawnManager
-{
+public class MobSpawnManager {
     public static final Path CONFIG_FILE_PATH = FMLPaths.GAMEDIR.get().resolve("config/" + Wyrmroost.MOD_ID + "-mob-spawns.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Multimap<Biome.Category, Record> BY_CATEGORY = ArrayListMultimap.create();
     private static final Multimap<ResourceLocation, Record> BY_BIOME = ArrayListMultimap.create();
     private static boolean initalized;
 
-    public static Collection<Record> getSpawnList(Biome.Category category, ResourceLocation biome)
-    {
+    public static Collection<Record> getSpawnList(Biome.Category category, ResourceLocation biome) {
         Collection<Record> records;
-        if ((records = BY_CATEGORY.get(category)) != null)
-        {
+        if ((records = BY_CATEGORY.get(category)) != null) {
             records.removeIf(r -> r.biomeBlacklist.contains(biome));
             return records;
         }
@@ -53,18 +50,15 @@ public class MobSpawnManager
         return Collections.emptyList();
     }
 
-    public static void load()
-    {
+    public static void load() {
         if (initalized) return;
 
         initalized = true;
         Wyrmroost.LOG.info("Loading Biome mob spawn entries...");
-        try
-        {
+        try {
             Path p = CONFIG_FILE_PATH;
             JsonElement json;
-            if (!Files.exists(p))
-            {
+            if (!Files.exists(p)) {
                 Files.createFile(p);
                 json = Record.CODEC
                         .encodeStart(JsonOps.INSTANCE, defaultList())
@@ -72,52 +66,43 @@ public class MobSpawnManager
                 JsonWriter writer = new JsonWriter(Files.newBufferedWriter(p));
                 writer.jsonValue(GSON.toJson(json));
                 writer.close();
-            }
-            else
-            {
+            } else {
                 BufferedReader reader = Files.newBufferedReader(p);
                 json = JSONUtils.fromJson(GSON, reader, JsonElement.class);
                 reader.close();
             }
 
-            if (json == null)
-            {
+            if (json == null) {
                 Wyrmroost.LOG.error("Could not load Wyrmroost mob spawn data as it is null or empty.");
                 return;
             }
 
             parse(json);
             Wyrmroost.LOG.info("Biome mob spawn entries successfully deserialized.");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Wyrmroost.LOG.error("Could not load Wyrmroost mob spawn data. Something went horrifically wrong...", e);
         }
     }
 
-    public static void close()
-    {
+    public static void close() {
         initalized = false;
         BY_CATEGORY.clear();
         BY_BIOME.clear();
     }
 
-    private static void parse(JsonElement json)
-    {
+    private static void parse(JsonElement json) {
         List<Record> result = Record.CODEC
                 .decode(JsonOps.INSTANCE, json)
                 .map(Pair::getFirst)
                 .getOrThrow(false, Wyrmroost.LOG::error);
 
-        for (Record record : result)
-        {
+        for (Record record : result) {
             record.category.ifPresent(category -> BY_CATEGORY.put(category, record));
             record.biomes.forEach(b -> BY_BIOME.put(b, record));
         }
     }
 
-    private static List<Record> defaultList()
-    {
+    private static List<Record> defaultList() {
         return ImmutableList.of(
                 rec(WREntities.LESSER_DESERTWYRM.get(), 3, 1, 3, DESERT, EntityClassification.AMBIENT),
                 rec(WREntities.ROOSTSTALKER.get(), 6, 2, 5, PLAINS),
@@ -130,18 +115,15 @@ public class MobSpawnManager
         );
     }
 
-    private static Record rec(EntityType<?> entity, int weight, int minCount, int maxCount, Biome.Category category)
-    {
+    private static Record rec(EntityType<?> entity, int weight, int minCount, int maxCount, Biome.Category category) {
         return rec(entity, weight, minCount, maxCount, category, EntityClassification.CREATURE);
     }
 
-    private static Record rec(EntityType<?> entity, int weight, int minCount, int maxCount, Biome.Category category, EntityClassification classification)
-    {
+    private static Record rec(EntityType<?> entity, int weight, int minCount, int maxCount, Biome.Category category, EntityClassification classification) {
         return new Record(entity, Optional.of(category), ImmutableList.of(), ImmutableSet.of(), classification, weight, minCount, maxCount);
     }
 
-    public static class Record
-    {
+    public static class Record {
         public static final Codec<List<Record>> CODEC = Codec.list(RecordCodecBuilder.create(o -> o.group(
                 Registry.ENTITY_TYPE.fieldOf("entity_type").forGetter(e -> e.entity),
                 Biome.Category.CODEC.optionalFieldOf("biome_category").forGetter(e -> e.category),
@@ -162,8 +144,7 @@ public class MobSpawnManager
         public final int minCount;
         public final int maxCount;
 
-        public Record(EntityType<?> entity, Optional<Biome.Category> category, List<ResourceLocation> biomes, ImmutableSet<ResourceLocation> biomeBlacklist, EntityClassification classification, int weight, int minCount, int maxCount)
-        {
+        public Record(EntityType<?> entity, Optional<Biome.Category> category, List<ResourceLocation> biomes, ImmutableSet<ResourceLocation> biomeBlacklist, EntityClassification classification, int weight, int minCount, int maxCount) {
             this.entity = entity;
             this.category = category;
             this.biomes = biomes;

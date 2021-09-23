@@ -10,32 +10,26 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 
-public interface BookAction
-{
+public interface BookAction {
     String TRANSLATE_PATH = "item.wyrmroost.dragon_staff.action.";
 
-    default ActionResultType clickBlock(@Nullable TameableDragonEntity dragon, ItemUseContext context)
-    {
+    default ActionResultType clickBlock(@Nullable TameableDragonEntity dragon, ItemUseContext context) {
         return ActionResultType.PASS;
     }
 
-    default ActionResultType rightClick(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack)
-    {
+    default ActionResultType rightClick(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
         return ActionResultType.PASS;
     }
 
-    default void onSelected(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack)
-    {
+    default void onSelected(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
     }
 
-    default void render(@Nullable TameableDragonEntity dragon, MatrixStack ms, float partialTicks)
-    {
+    default void render(@Nullable TameableDragonEntity dragon, MatrixStack ms, float partialTicks) {
     }
 
     String getTranslateKey(@Nullable TameableDragonEntity dragon);
 
-    default TranslationTextComponent getTranslation(@Nullable TameableDragonEntity dragon)
-    {
+    default TranslationTextComponent getTranslation(@Nullable TameableDragonEntity dragon) {
         return new TranslationTextComponent(getTranslateKey(dragon));
     }
 }

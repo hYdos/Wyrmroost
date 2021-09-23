@@ -18,39 +18,34 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WRBlockEntities<T extends TileEntity> extends TileEntityType<T>
-{
+public class WRBlockEntities<T extends TileEntity> extends TileEntityType<T> {
     public static final DeferredRegister<TileEntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Wyrmroost.MOD_ID);
 
     public static final RegistryObject<TileEntityType<?>> CUSTOM_SIGN = register("sign", WRSignBlockEntity::new, () -> SignTileEntityRenderer::new);
 
-    @Nullable private final Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer;
+    @Nullable
+    private final Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer;
 
-    public WRBlockEntities(Supplier<? extends T> factory, Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer)
-    {
+    public WRBlockEntities(Supplier<? extends T> factory, Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer) {
         super(factory, null, null);
         this.renderer = renderer;
     }
 
     @Override
-    public boolean isValid(Block block)
-    {
+    public boolean isValid(Block block) {
         return block instanceof Validator && ((Validator) block).isValidEntity(this);
     }
 
-    public void callBack()
-    {
+    public void callBack() {
         if (ModUtils.isClient() && renderer != null)
             ClientRegistry.bindTileEntityRenderer(this, renderer.get());
     }
 
-    public static <T extends TileEntity> RegistryObject<TileEntityType<?>> register(String name, Supplier<T> factory, @Nullable Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer)
-    {
+    public static <T extends TileEntity> RegistryObject<TileEntityType<?>> register(String name, Supplier<T> factory, @Nullable Supplier<Function<TileEntityRendererDispatcher, TileEntityRenderer<T>>> renderer) {
         return REGISTRY.register(name, () -> new WRBlockEntities<>(factory, renderer));
     }
 
-    public interface Validator
-    {
+    public interface Validator {
         boolean isValidEntity(TileEntityType<?> type);
     }
 }

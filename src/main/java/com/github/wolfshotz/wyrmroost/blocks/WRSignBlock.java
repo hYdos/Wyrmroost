@@ -10,53 +10,43 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.IBlockReader;
 
-public class WRSignBlock extends StandingSignBlock implements WRBlockEntities.Validator
-{
-    public WRSignBlock(Properties properties, WoodType type)
-    {
+public class WRSignBlock extends StandingSignBlock implements WRBlockEntities.Validator {
+    public WRSignBlock(Properties properties, WoodType type) {
         super(properties, type);
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state)
-    {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
     @Override
-    public TileEntity newBlockEntity(IBlockReader level)
-    {
+    public TileEntity newBlockEntity(IBlockReader level) {
         return new WRSignBlockEntity();
     }
 
     @Override
-    public boolean isValidEntity(TileEntityType<?> type)
-    {
+    public boolean isValidEntity(TileEntityType<?> type) {
         return type == WRBlockEntities.CUSTOM_SIGN.get();
     }
 
-    public static class Wall extends WallSignBlock implements WRBlockEntities.Validator
-    {
-        public Wall(Properties properties, WoodType type)
-        {
+    public static class Wall extends WallSignBlock implements WRBlockEntities.Validator {
+        public Wall(Properties properties, WoodType type) {
             super(properties, type);
         }
 
         @Override
-        public boolean hasTileEntity(BlockState state)
-        {
+        public boolean hasTileEntity(BlockState state) {
             return true;
         }
 
         @Override
-        public TileEntity newBlockEntity(IBlockReader level)
-        {
+        public TileEntity newBlockEntity(IBlockReader level) {
             return new WRSignBlockEntity();
         }
 
         @Override
-        public boolean isValidEntity(TileEntityType<?> type)
-        {
+        public boolean isValidEntity(TileEntityType<?> type) {
             return type == WRBlockEntities.CUSTOM_SIGN.get();
         }
     }

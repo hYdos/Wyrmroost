@@ -15,24 +15,20 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class GeodeTippedArrowEntity extends AbstractArrowEntity implements IEntityAdditionalSpawnData
-{
+public class GeodeTippedArrowEntity extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
     private final GeodeTippedArrowItem item;
 
-    public GeodeTippedArrowEntity(EntityType<? extends AbstractArrowEntity> type, World level)
-    {
+    public GeodeTippedArrowEntity(EntityType<? extends AbstractArrowEntity> type, World level) {
         super(type, level);
         this.item = (GeodeTippedArrowItem) WRItems.BLUE_GEODE_ARROW.get();
     }
 
-    public GeodeTippedArrowEntity(World level, Item item)
-    {
+    public GeodeTippedArrowEntity(World level, Item item) {
         super(WREntities.GEODE_TIPPED_ARROW.get(), level);
         this.item = (GeodeTippedArrowItem) item;
     }
 
-    public GeodeTippedArrowEntity(FMLPlayMessages.SpawnEntity packet, World level)
-    {
+    public GeodeTippedArrowEntity(FMLPlayMessages.SpawnEntity packet, World level) {
         super(WREntities.GEODE_TIPPED_ARROW.get(), level);
 
         PacketBuffer buf = packet.getAdditionalData();
@@ -41,33 +37,28 @@ public class GeodeTippedArrowEntity extends AbstractArrowEntity implements IEnti
         this.item = (GeodeTippedArrowItem) Item.byId(buf.readVarInt());
     }
 
-    public GeodeTippedArrowItem getItem()
-    {
+    public GeodeTippedArrowItem getItem() {
         return item;
     }
 
     @Override
-    protected ItemStack getPickupItem()
-    {
+    protected ItemStack getPickupItem() {
         return new ItemStack(item);
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buf)
-    {
+    public void writeSpawnData(PacketBuffer buf) {
         Entity shooter = getOwner();
-        buf.writeInt(shooter == null? 0 : shooter.getId());
+        buf.writeInt(shooter == null ? 0 : shooter.getId());
         buf.writeVarInt(Item.getId(item));
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData)
-    {
+    public void readSpawnData(PacketBuffer additionalData) {
     }
 }

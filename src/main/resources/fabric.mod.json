@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "wyverncraft",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Why-vern craft",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
     "Me!"

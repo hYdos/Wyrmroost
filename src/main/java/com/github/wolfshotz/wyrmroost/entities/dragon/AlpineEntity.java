@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.entity.ai.attributes.Attributes.*;
 
-public class AlpineEntity extends TameableDragonEntity
-{
+public class AlpineEntity extends TameableDragonEntity {
     public static final EntitySerializer<AlpineEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
@@ -48,14 +47,12 @@ public class AlpineEntity extends TameableDragonEntity
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat flightTimer = LerpedFloat.unit();
 
-    public AlpineEntity(EntityType<? extends TameableDragonEntity> dragon, World level)
-    {
+    public AlpineEntity(EntityType<? extends TameableDragonEntity> dragon, World level) {
         super(dragon, level);
     }
 
     @Override
-    protected void registerGoals()
-    {
+    protected void registerGoals() {
         super.registerGoals();
 
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
@@ -71,14 +68,12 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySerializer<? extends TameableDragonEntity> getSerializer()
-    {
+    public EntitySerializer<? extends TameableDragonEntity> getSerializer() {
         return SERIALIZER;
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(FLYING, false);
         entityData.define(SLEEPING, false);
@@ -86,25 +81,21 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public void aiStep()
-    {
+    public void aiStep() {
         super.aiStep();
 
-        sitTimer.add(isInSittingPose() || isSleeping()? 0.1f : -0.1f);
-        sleepTimer.add(isSleeping()? 0.1f : -0.1f);
-        flightTimer.add(isFlying()? 0.1f : -0.05f);
+        sitTimer.add(isInSittingPose() || isSleeping() ? 0.1f : -0.1f);
+        sleepTimer.add(isSleeping() ? 0.1f : -0.1f);
+        flightTimer.add(isFlying() ? 0.1f : -0.05f);
 
         if (!level.isClientSide && noAnimations() && !isSleeping() && isJuvenile() && getRandom().nextDouble() < 0.0005)
             AnimationPacket.send(this, ROAR_ANIMATION);
     }
 
-    public void roarAnimation(int time)
-    {
+    public void roarAnimation(int time) {
         if (time == 0) playSound(WRSounds.ENTITY_ALPINE_ROAR.get(), 3f, 1f);
-        else if (time == 25)
-        {
-            for (LivingEntity entity : getEntitiesNearby(20, e -> e.getType() == WREntities.ALPINE.get()))
-            {
+        else if (time == 25) {
+            for (LivingEntity entity : getEntitiesNearby(20, e -> e.getType() == WREntities.ALPINE.get())) {
                 AlpineEntity alpine = ((AlpineEntity) entity);
                 if (alpine.noAnimations() && alpine.isIdling() && !alpine.isSleeping())
                     alpine.setAnimation(ROAR_ANIMATION);
@@ -112,11 +103,9 @@ public class AlpineEntity extends TameableDragonEntity
         }
     }
 
-    public void windGustAnimation(int time)
-    {
+    public void windGustAnimation(int time) {
         if (time == 0) setDeltaMovement(getDeltaMovement().add(0, -0.35, 0));
-        if (time == 4)
-        {
+        if (time == 4) {
             if (!level.isClientSide) level.addFreshEntity(new WindGustEntity(this));
             setDeltaMovement(getDeltaMovement().add(getLookAngle().reverse().multiply(1.5, 0, 1.5).add(0, 1, 0)));
             playSound(WRSounds.WING_FLAP.get(), 3, 1f, true);
@@ -124,15 +113,12 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public boolean doHurtTarget(Entity enemy)
-    {
+    public boolean doHurtTarget(Entity enemy) {
         boolean flag = super.doHurtTarget(enemy);
 
-        if (!isTame() && flag && !enemy.isAlive() && enemy.getType() == EntityType.BEE)
-        {
+        if (!isTame() && flag && !enemy.isAlive() && enemy.getType() == EntityType.BEE) {
             BeeEntity bee = (BeeEntity) enemy;
-            if (bee.hasNectar() && bee.isLeashed())
-            {
+            if (bee.hasNectar() && bee.isLeashed()) {
                 Entity holder = bee.getLeashHolder();
                 if (holder instanceof PlayerEntity) tame(true, (PlayerEntity) holder);
             }
@@ -141,11 +127,9 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source)
-    {
+    public boolean isInvulnerableTo(DamageSource source) {
         Entity attacker = source.getDirectEntity();
-        if (attacker != null && attacker.getType() == EntityType.BEE)
-        {
+        if (attacker != null && attacker.getType() == EntityType.BEE) {
             setTarget((BeeEntity) attacker);
             return true;
         }
@@ -153,28 +137,24 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
-    {
+    public EntitySize getDimensions(Pose pose) {
         EntitySize size = getType().getDimensions().scale(getScale());
-        return size.scale(1, isInSittingPose() || isSleeping()? 0.7f : 1);
+        return size.scale(1, isInSittingPose() || isSleeping() ? 0.7f : 1);
     }
 
     @Override
-    public float getScale()
-    {
+    public float getScale() {
         return getAgeScale(0.2f);
     }
 
     @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
-    {
+    public void recievePassengerKeybind(int key, int mods, boolean pressed) {
         if (key == KeybindHandler.ALT_MOUNT_KEY && pressed && noAnimations() && isFlying())
             setAnimation(WIND_GUST_ANIMATION);
     }
 
     @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
-    {
+    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getInfo().move(ClientEvents.getViewCollision(-5d, this), 0.75d, 0);
         else
@@ -182,81 +162,69 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    protected void jumpFromGround()
-    {
+    protected void jumpFromGround() {
         super.jumpFromGround();
         if (!level.isClientSide)
             level.addFreshEntity(new WindGustEntity(this, position().add(0, 7, 0), calculateViewVector(90, yRot)));
     }
 
     @Override
-    protected float getJumpPower()
-    {
+    protected float getJumpPower() {
         if (canFly()) return (getBbHeight() * getBlockJumpFactor());
         else return super.getJumpPower();
     }
 
     @Override
-    public void swing(Hand hand)
-    {
+    public void swing(Hand hand) {
         setAnimation(BITE_ANIMATION);
         playSound(SoundEvents.GENERIC_EAT, 1, 1, true);
         super.swing(hand);
     }
 
     @Override
-    public int determineVariant()
-    {
+    public int determineVariant() {
         return getRandom().nextInt(6);
     }
 
     @Override
-    protected boolean canAddPassenger(Entity entity)
-    {
+    protected boolean canAddPassenger(Entity entity) {
         return isJuvenile() && entity instanceof LivingEntity && isOwnedBy((LivingEntity) entity);
     }
 
     @Override
-    public boolean isFood(ItemStack stack)
-    {
+    public boolean isFood(ItemStack stack) {
         return ModUtils.contains(stack.getItem(), Items.HONEYCOMB, Items.HONEY_BOTTLE);
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn)
-    {
-        return sizeIn.height * (isFlying()? 0.8f : 1.25f);
+    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
+        return sizeIn.height * (isFlying() ? 0.8f : 1.25f);
     }
 
     @Nullable
     @Override
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return WRSounds.ENTITY_ALPINE_IDLE.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return WRSounds.ENTITY_ALPINE_ROAR.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return WRSounds.ENTITY_ALPINE_DEATH.get();
     }
 
     @Override
-    public Animation[] getAnimations()
-    {
+    public Animation[] getAnimations() {
         return ANIMATIONS;
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
-    {
+    public static AttributeModifierMap.MutableAttribute getAttributeMap() {
         return MobEntity.createMobAttributes()
                 .add(MAX_HEALTH, 40)
                 .add(MOVEMENT_SPEED, 0.22)

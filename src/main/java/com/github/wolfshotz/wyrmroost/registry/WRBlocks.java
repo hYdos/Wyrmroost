@@ -36,13 +36,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WRBlocks
-{
-    public static final ItemGroup BLOCKS_ITEM_GROUP = new ItemGroup("wyrmroost_dimension")
-    {
+public class WRBlocks {
+    public static final ItemGroup BLOCKS_ITEM_GROUP = new ItemGroup("wyrmroost_dimension") {
         @Override
-        public ItemStack makeIcon()
-        {
+        public ItemStack makeIcon() {
             return new ItemStack(PURPLE_GEODE_BLOCK.get());
         }
     };
@@ -126,42 +123,35 @@ public class WRBlocks
     public static final RegistryObject<Block> EMBER_BLOCK = register("ember_block", EmberBlock::new);
     public static final RegistryObject<Block> EMBERS = register("embers", EmberLayerBlock::new);
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block)
-    {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block) {
         return register(name, block, extend());
     }
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension)
-    {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension) {
         RegistryObject<Block> delegate = REGISTRY.register(name, block);
         if (extension.itemFactory != null) WRItems.register(name, () -> extension.itemFactory.apply(delegate.get()));
-        if (extension.requiresSetup())
-        {
+        if (extension.requiresSetup()) {
             extension.block = delegate;
             EXTENSIONS.add(extension);
         }
         return delegate;
     }
 
-    public static AbstractBlock.Properties properties(Material material, SoundType sound)
-    {
+    public static AbstractBlock.Properties properties(Material material, SoundType sound) {
         return AbstractBlock.Properties
                 .of(material)
                 .sound(sound);
     }
 
-    public static AbstractBlock.Properties plant()
-    {
+    public static AbstractBlock.Properties plant() {
         return properties(Material.PLANT, SoundType.GRASS).noCollission();
     }
 
-    public static AbstractBlock.Properties replaceablePlant()
-    {
+    public static AbstractBlock.Properties replaceablePlant() {
         return properties(Material.REPLACEABLE_PLANT, SoundType.GRASS).noCollission();
     }
 
-    public static AbstractBlock.Properties leaves()
-    {
+    public static AbstractBlock.Properties leaves() {
         return properties(Material.LEAVES, SoundType.GRASS)
                 .strength(0.2f)
                 .randomTicks()
@@ -171,8 +161,7 @@ public class WRBlocks
                 .isViewBlocking((s, r, p) -> false);
     }
 
-    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardnessResistance, SoundType sound)
-    {
+    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardnessResistance, SoundType sound) {
         return AbstractBlock.Properties
                 .of(material)
                 .harvestTool(harvestTool)
@@ -182,8 +171,7 @@ public class WRBlocks
                 .sound(sound);
     }
 
-    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardness, float resistance, SoundType sound)
-    {
+    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardness, float resistance, SoundType sound) {
         return AbstractBlock.Properties
                 .of(material)
                 .harvestTool(harvestTool)
@@ -193,8 +181,7 @@ public class WRBlocks
                 .sound(sound);
     }
 
-    public static class Tags
-    {
+    public static class Tags {
         public static final Map<INamedTag<Block>, INamedTag<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
 
         public static final INamedTag<Block> ORES_GEODE = forge("ores/geode");
@@ -210,93 +197,76 @@ public class WRBlocks
         public static final INamedTag<Block> RED_CORIN_LOGS = tag("red_corin_logs");
         public static final INamedTag<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
 
-        static INamedTag<Block> forge(String path)
-        {
+        static INamedTag<Block> forge(String path) {
             return getFor("forge:" + path);
         }
 
-        public static INamedTag<Block> tag(String path)
-        {
+        public static INamedTag<Block> tag(String path) {
             return getFor(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        public static INamedTag<Block> getFor(String path)
-        {
+        public static INamedTag<Block> getFor(String path) {
             INamedTag<Block> tag = BlockTags.bind(path);
             ITEM_BLOCK_TAGS.put(tag, ItemTags.bind(path));
             return tag;
         }
 
-        public static INamedTag<Item> getItemTagFor(INamedTag<Block> blockTag)
-        {
+        public static INamedTag<Item> getItemTagFor(INamedTag<Block> blockTag) {
             return ITEM_BLOCK_TAGS.get(blockTag);
         }
     }
 
-    public static BlockExtension extend()
-    {
+    public static BlockExtension extend() {
         return new BlockExtension();
     }
 
-    public static int grassTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tint)
-    {
-        return level == null || pos == null? GrassColors.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
+    public static int grassTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tint) {
+        return level == null || pos == null ? GrassColors.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
     }
 
-    public static class BlockExtension
-    {
+    public static class BlockExtension {
         RegistryObject<Block> block;
         Function<Block, BlockItem> itemFactory = b -> new BlockItem(b, new Item.Properties().tab(BLOCKS_ITEM_GROUP));
         Supplier<Supplier<RenderType>> renderType;
         IBlockTint tintFunc;
         int[] flammability;
 
-        public BlockExtension item(Function<Block, BlockItem> factory)
-        {
+        public BlockExtension item(Function<Block, BlockItem> factory) {
             this.itemFactory = factory;
             return this;
         }
 
-        public BlockExtension noItem()
-        {
+        public BlockExtension noItem() {
             return item(null);
         }
 
-        public BlockExtension render(Supplier<Supplier<RenderType>> renderSupplier)
-        {
+        public BlockExtension render(Supplier<Supplier<RenderType>> renderSupplier) {
             this.renderType = renderSupplier;
             return this;
         }
 
-        public BlockExtension cutoutRenderer()
-        {
+        public BlockExtension cutoutRenderer() {
             return render(() -> RenderType::cutout);
         }
 
-        public BlockExtension tint(IBlockTint tint)
-        {
+        public BlockExtension tint(IBlockTint tint) {
             this.tintFunc = tint;
             return this;
         }
 
-        public BlockExtension flammability(int spread, int destroyRate)
-        {
+        public BlockExtension flammability(int spread, int destroyRate) {
             this.flammability = new int[]{spread, destroyRate};
             return this;
         }
 
-        private boolean requiresSetup()
-        {
+        private boolean requiresSetup() {
             return renderType != null || flammability != null || tintFunc != null;
         }
 
-        public void callBack()
-        {
-            if (ModUtils.isClient())
-            {
+        public void callBack() {
+            if (ModUtils.isClient()) {
                 if (renderType != null) RenderTypeLookup.setRenderLayer(block.get(), renderType.get().get());
-                if (tintFunc != null)
-                {
+                if (tintFunc != null) {
                     Block b = block.get();
                     ClientEvents.getClient().getBlockColors().register(tintFunc::getTint, b);
                     ClientEvents.getClient().getItemColors().register((s, i) -> tintFunc.getTint(b.defaultBlockState(), null, null, i), b.asItem());
@@ -310,8 +280,7 @@ public class WRBlocks
     /**
      * Small helper interface to avoid having to double-wrap suppliers
      */
-    public interface IBlockTint
-    {
+    public interface IBlockTint {
         /**
          * @param state     The BlockState of the block we're tinting for
          * @param level     Nullable: possible to get the world from the client but not recommended; could be in ITEM context.

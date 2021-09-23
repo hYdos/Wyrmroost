@@ -44,12 +44,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
  * Also a client helper class because yes.
  */
 @SuppressWarnings("unused")
-public class ClientEvents
-{
+public class ClientEvents {
     public static boolean keybindFlight = true;
 
-    public static void init()
-    {
+    public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -71,8 +69,7 @@ public class ClientEvents
     //       Mod Bus
     // ====================
 
-    private static void clientSetup(final FMLClientSetupEvent event)
-    {
+    private static void clientSetup(final FMLClientSetupEvent event) {
         WRKeybind.registerKeys();
 
         ThinLogBlock.consumeThinLogs(b -> RenderTypeLookup.setRenderLayer(b, RenderType.cutout()),
@@ -93,20 +90,17 @@ public class ClientEvents
         });
     }
 
-    private static void bakeParticles(ParticleFactoryRegisterEvent event)
-    {
+    private static void bakeParticles(ParticleFactoryRegisterEvent event) {
         for (ParticleType<?> entry : ModUtils.getRegistryEntries(WRParticles.REGISTRY))
             if (entry instanceof WRParticles<?>) ((WRParticles<?>) entry).bake();
     }
 
-    private static void stitchTextures(TextureStitchEvent.Pre evt)
-    {
+    private static void stitchTextures(TextureStitchEvent.Pre evt) {
         if (evt.getMap().location() == AtlasTexture.LOCATION_BLOCKS)
             evt.addSprite(BreathWeaponRenderer.BLUE_FIRE);
     }
 
-    private static void itemColors(ColorHandlerEvent.Item evt)
-    {
+    private static void itemColors(ColorHandlerEvent.Item evt) {
         ItemColors handler = evt.getItemColors();
         IItemColor eggFunc = (stack, tintIndex) -> ((LazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
         for (LazySpawnEggItem<?> e : LazySpawnEggItem.SPAWN_EGGS) handler.register(eggFunc, e);
@@ -114,8 +108,7 @@ public class ClientEvents
         handler.register((stack, index) -> ((IDyeableArmorItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
 
-    private static void bakeModels(ModelRegistryEvent event)
-    {
+    private static void bakeModels(ModelRegistryEvent event) {
         ModelLoader.addSpecialModel(TarragonTomeRenderer.SPRITE_MODEL_LOCATION);
     }
 
@@ -123,8 +116,7 @@ public class ClientEvents
     //      Forge Bus
     // =====================
 
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
-    {
+    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof TameableDragonEntity)) return;
@@ -137,43 +129,35 @@ public class ClientEvents
     // =====================
 
     // for class loading issues
-    public static Minecraft getClient()
-    {
+    public static Minecraft getClient() {
         return Minecraft.getInstance();
     }
 
-    public static ClientWorld getLevel()
-    {
+    public static ClientWorld getLevel() {
         return getClient().level;
     }
 
-    public static PlayerEntity getPlayer()
-    {
+    public static PlayerEntity getPlayer() {
         return getClient().player;
     }
 
-    public static Vector3d getProjectedView()
-    {
+    public static Vector3d getProjectedView() {
         return getClient().gameRenderer.getMainCamera().getPosition();
     }
 
-    public static float getPartialTicks()
-    {
+    public static float getPartialTicks() {
         return getClient().getFrameTime();
     }
 
-    public static <T extends Entity & IRendersAsItem> SpriteRenderer<T> spriteRenderer(EntityRendererManager m)
-    {
+    public static <T extends Entity & IRendersAsItem> SpriteRenderer<T> spriteRenderer(EntityRendererManager m) {
         return new SpriteRenderer<>(m, getClient().getItemRenderer());
     }
 
-    public static double getViewCollision(double wanted, Entity entity)
-    {
+    public static double getViewCollision(double wanted, Entity entity) {
         ActiveRenderInfo info = getClient().gameRenderer.getMainCamera();
         Vector3d position = info.getPosition();
         Vector3f forwards = info.getLookVector();
-        for (int i = 0; i < 8; ++i)
-        {
+        for (int i = 0; i < 8; ++i) {
             float f = (float) ((i & 1) * 2 - 1);
             float f1 = (float) ((i >> 1 & 1) * 2 - 1);
             float f2 = (float) ((i >> 2 & 1) * 2 - 1);
@@ -183,8 +167,7 @@ public class ClientEvents
             Vector3d vector3d = position.add(f, f1, f2);
             Vector3d vector3d1 = new Vector3d(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
             RayTraceResult rtr = entity.level.clip(new RayTraceContext(vector3d, vector3d1, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
-            if (rtr.getType() != RayTraceResult.Type.MISS)
-            {
+            if (rtr.getType() != RayTraceResult.Type.MISS) {
                 double distance = rtr.getLocation().distanceTo(position);
                 if (distance < wanted) wanted = distance;
             }

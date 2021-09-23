@@ -12,31 +12,25 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class BookActionPacket
-{
+public class BookActionPacket {
     public final BookAction action;
 
-    public BookActionPacket(BookAction action)
-    {
+    public BookActionPacket(BookAction action) {
         this.action = action;
     }
 
-    public BookActionPacket(PacketBuffer buf)
-    {
+    public BookActionPacket(PacketBuffer buf) {
         action = BookActions.ACTIONS.get(buf.readInt());
     }
 
-    public void encode(PacketBuffer buf)
-    {
+    public void encode(PacketBuffer buf) {
         buf.writeInt(BookActions.ACTIONS.indexOf(action));
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> context)
-    {
+    public boolean handle(Supplier<NetworkEvent.Context> context) {
         ServerPlayerEntity player = context.get().getSender();
         ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
-        if (stack != null)
-        {
+        if (stack != null) {
             TarragonTomeItem.setAction(action, player, stack);
             return true;
         }

@@ -16,32 +16,26 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Function;
 
-public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
-{
+public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity> {
     public static final ResourceLocation BLUE_FIRE = Wyrmroost.id("entity/projectiles/rr_breath/blue_fire");
 
-    public BreathWeaponRenderer(EntityRendererManager renderManager)
-    {
+    public BreathWeaponRenderer(EntityRendererManager renderManager) {
         super(renderManager);
     }
 
     @Override
-    public void render(DragonProjectileEntity entity, float yaw, float partialTicks, MatrixStack ms, IRenderTypeBuffer typeBuffer, int packedLine)
-    {
-        if (entity.isOnFire())
-        {
+    public void render(DragonProjectileEntity entity, float yaw, float partialTicks, MatrixStack ms, IRenderTypeBuffer typeBuffer, int packedLine) {
+        if (entity.isOnFire()) {
             renderFire(ms, typeBuffer, entity);
         }
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DragonProjectileEntity entity)
-    {
+    public ResourceLocation getTextureLocation(DragonProjectileEntity entity) {
         return null;
     }
 
-    private void renderFire(MatrixStack ms, IRenderTypeBuffer typeBuffer, Entity entity)
-    {
+    private void renderFire(MatrixStack ms, IRenderTypeBuffer typeBuffer, Entity entity) {
         Function<ResourceLocation, TextureAtlasSprite> func = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS);
         TextureAtlasSprite fireSprite1 = func.apply(BLUE_FIRE);
         ms.pushPose();
@@ -56,14 +50,12 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
         IVertexBuilder vertex = typeBuffer.getBuffer(Atlases.cutoutBlockSheet());
         MatrixStack.Entry msEntry = ms.last();
 
-        for (int i = 0; height > 0; i++)
-        {
+        for (int i = 0; height > 0; i++) {
             float minU = fireSprite1.getU0();
             float minV = fireSprite1.getV0();
             float maxU = fireSprite1.getU1();
             float maxV = fireSprite1.getV1();
-            if (i / 2 % 2 == 0)
-            {
+            if (i / 2 % 2 == 0) {
                 float prevMaxU = maxU;
                 maxU = minU;
                 minU = prevMaxU;
@@ -82,8 +74,7 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
         ms.popPose();
     }
 
-    private static void vertex(MatrixStack.Entry msEntry, IVertexBuilder bufferIn, float x, float y, float z, float texU, float texV)
-    {
+    private static void vertex(MatrixStack.Entry msEntry, IVertexBuilder bufferIn, float x, float y, float z, float texU, float texV) {
         bufferIn.vertex(msEntry.pose(), x, y, z)
                 .color(255, 255, 255, 255)
                 .uv(texU, texV)

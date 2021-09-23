@@ -8,23 +8,18 @@ import net.minecraft.util.math.vector.Vector3d;
 /**
  * todo: I guess make our own node processor. Derivative of WalkAndSwim, just ditch all the water related shit.
  */
-public class FlyerPathNavigator extends FlyingPathNavigator
-{
-    public FlyerPathNavigator(TameableDragonEntity entity)
-    {
+public class FlyerPathNavigator extends FlyingPathNavigator {
+    public FlyerPathNavigator(TameableDragonEntity entity) {
         super(entity, entity.level);
     }
 
     @Override
     @SuppressWarnings("ConstantConditions") // IT CAN BE NULL DAMNIT
-    public void tick()
-    {
-        if (!isDone() && canUpdatePath())
-        {
+    public void tick() {
+        if (!isDone() && canUpdatePath()) {
             TameableDragonEntity dragon = ((TameableDragonEntity) mob);
             BlockPos target = getTargetPos();
-            if (target != null)
-            {
+            if (target != null) {
                 mob.getMoveControl().setWantedPosition(target.getX(), target.getY(), target.getZ(), speedModifier);
                 maxDistanceToWaypoint = mob.getBbWidth() * mob.getBbWidth() * dragon.getYawRotationSpeed() * dragon.getYawRotationSpeed();
                 Vector3d entityPos = getTempMobPos();
@@ -35,8 +30,7 @@ public class FlyerPathNavigator extends FlyingPathNavigator
     }
 
     @Override
-    public boolean isStableDestination(BlockPos pos)
-    {
+    public boolean isStableDestination(BlockPos pos) {
         return true;
     }
 }

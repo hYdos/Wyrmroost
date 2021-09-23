@@ -28,16 +28,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class DragonEggItem extends Item
-{
-    public DragonEggItem()
-    {
+public class DragonEggItem extends Item {
+    public DragonEggItem() {
         super(WRItems.builder().stacksTo(1).setISTER(() -> DragonEggStackRenderer::new));
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity)
-    {
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
         if (!player.isCreative()) return false;
         if (!entity.isAlive()) return false;
         if (!(entity instanceof TameableDragonEntity)) return false;
@@ -52,8 +49,7 @@ public class DragonEggItem extends Item
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext ctx)
-    {
+    public ActionResultType useOn(ItemUseContext ctx) {
         PlayerEntity player = ctx.getPlayer();
         if (player.isShiftKeyDown()) return super.useOn(ctx);
 
@@ -75,26 +71,23 @@ public class DragonEggItem extends Item
 
         return ActionResultType.SUCCESS;
     }
-    
+
     @Override
-    public ITextComponent getName(ItemStack stack)
-    {
+    public ITextComponent getName(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
         if (tag == null || tag.isEmpty()) return super.getName(stack);
         Optional<EntityType<?>> type = EntityType.byString(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE));
-        
-        if (type.isPresent())
-        {
+
+        if (type.isPresent()) {
             String dragonTranslation = type.get().getDescription().getString();
             return new TranslationTextComponent(dragonTranslation + " ").append(new TranslationTextComponent(getDescriptionId()));
         }
-        
+
         return super.getName(stack);
     }
-    
+
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
-    {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         CompoundNBT tag = stack.getTag();
 
         if (tag != null && tag.contains(DragonEggEntity.DATA_HATCH_TIME))
@@ -104,13 +97,11 @@ public class DragonEggItem extends Item
             tooltip.add(new TranslationTextComponent("item.wyrmroost.egg.creativetooltip").withStyle(TextFormatting.GRAY));
     }
 
-    public static ItemStack getStack(EntityType<?> type)
-    {
+    public static ItemStack getStack(EntityType<?> type) {
         return getStack(type, DragonEggProperties.get(type).getHatchTime());
     }
 
-    public static ItemStack getStack(EntityType<?> type, int hatchTime)
-    {
+    public static ItemStack getStack(EntityType<?> type, int hatchTime) {
         ItemStack stack = new ItemStack(WRItems.DRAGON_EGG.get());
         CompoundNBT tag = new CompoundNBT();
         tag.putString(DragonEggEntity.DATA_DRAGON_TYPE, EntityType.getKey(type).toString());

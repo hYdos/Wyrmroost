@@ -19,25 +19,20 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class FireBreathEntity extends BreathWeaponEntity
-{
-    public FireBreathEntity(EntityType<?> type, World level)
-    {
+public class FireBreathEntity extends BreathWeaponEntity {
+    public FireBreathEntity(EntityType<?> type, World level) {
         super(type, level);
     }
 
-    public FireBreathEntity(TameableDragonEntity shooter)
-    {
+    public FireBreathEntity(TameableDragonEntity shooter) {
         super(WREntities.FIRE_BREATH.get(), shooter);
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         super.tick();
 
-        if (isInWater())
-        {
+        if (isInWater()) {
             if (random.nextDouble() <= 0.25d) playSound(SoundEvents.FIRE_EXTINGUISH, 1, 1);
             for (int i = 0; i < 15; i++)
                 level.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.2f, random.nextDouble() * 0.08f, Mafs.nextDouble(random) * 0.2f);
@@ -53,14 +48,12 @@ public class FireBreathEntity extends BreathWeaponEntity
     }
 
     @Override
-    public void onBlockImpact(BlockPos pos, Direction direction)
-    {
+    public void onBlockImpact(BlockPos pos, Direction direction) {
         super.onBlockImpact(pos, direction);
         if (level.isClientSide) return;
 
         BlockState state = level.getBlockState(pos);
-        if (CampfireBlock.canLight(state))
-        {
+        if (CampfireBlock.canLight(state)) {
             level.setBlock(pos, state.setValue(BlockStateProperties.LIT, true), 11);
             return;
         }
@@ -76,8 +69,7 @@ public class FireBreathEntity extends BreathWeaponEntity
     }
 
     @Override
-    public void onEntityImpact(Entity entity)
-    {
+    public void onEntityImpact(Entity entity) {
         if (level.isClientSide) return;
 
         float damage = (float) shooter.getAttributeValue(WREntities.Attributes.PROJECTILE_DAMAGE.get());
@@ -86,24 +78,21 @@ public class FireBreathEntity extends BreathWeaponEntity
         if (entity.fireImmune()) damage *= 0.25; // impact damage
         else entity.setSecondsOnFire(8);
 
-        entity.hurt(getDamageSource(random.nextDouble() > 0.2? "fireBreath0" : "fireBreath1"), damage);
+        entity.hurt(getDamageSource(random.nextDouble() > 0.2 ? "fireBreath0" : "fireBreath1"), damage);
     }
 
     @Override
-    public DamageSource getDamageSource(String name)
-    {
+    public DamageSource getDamageSource(String name) {
         return super.getDamageSource(name).setIsFire();
     }
 
     @Override // Because we do it better.
-    public boolean displayFireAnimation()
-    {
+    public boolean displayFireAnimation() {
         return false;
     }
 
     @Override
-    public boolean isOnFire()
-    {
+    public boolean isOnFire() {
         return true;
     }
 }

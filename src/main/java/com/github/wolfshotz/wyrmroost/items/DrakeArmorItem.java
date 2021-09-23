@@ -10,27 +10,23 @@ import net.minecraft.inventory.EquipmentSlotType;
 
 import java.util.UUID;
 
-public class DrakeArmorItem extends ArmorBase
-{
+public class DrakeArmorItem extends ArmorBase {
     private static final UUID KB_RESISTANCE_ID = UUID.fromString("eaa010aa-299d-4c76-9f02-a1283c9e890b");
     private static final AttributeModifier KB_RESISTANCE = new AttributeModifier(KB_RESISTANCE_ID, "Drake armor knockback resistance", 10, AttributeModifier.Operation.ADDITION);
 
-    public DrakeArmorItem(EquipmentSlotType equipType)
-    {
+    public DrakeArmorItem(EquipmentSlotType equipType) {
         super(ArmorMaterials.DRAKE, equipType);
     }
 
     @Override
-    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet)
-    {
+    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet) {
         ModifiableAttributeInstance attribute = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (attribute.hasModifier(KB_RESISTANCE)) attribute.removeModifier(KB_RESISTANCE);
         if (hasFullSet) attribute.addTransientModifier(KB_RESISTANCE);
     }
 
     @Override
-    protected boolean hasDescription()
-    {
+    protected boolean hasDescription() {
         return true;
     }
 }

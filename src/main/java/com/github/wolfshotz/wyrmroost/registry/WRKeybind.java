@@ -14,8 +14,7 @@ import org.lwjgl.glfw.GLFW;
 /**
  * @see org.lwjgl.glfw.GLFW
  */
-public class WRKeybind extends KeyBinding
-{
+public class WRKeybind extends KeyBinding {
     private static final String CATEGORY = "keyCategory.wyrmroost";
 
     public static final KeyBinding FLIGHT_DESCENT = new KeyBinding("key.flight_descent", GLFW.GLFW_KEY_LEFT_CONTROL, CATEGORY);
@@ -24,25 +23,21 @@ public class WRKeybind extends KeyBinding
     private final boolean sendsPacket;
     private boolean prevIsPressed;
 
-    public WRKeybind(String name, int keyCode, byte behaviorId, boolean sendsPacket)
-    {
+    public WRKeybind(String name, int keyCode, byte behaviorId, boolean sendsPacket) {
         super(name, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrCreate(keyCode), CATEGORY);
         this.behaviorId = behaviorId;
         this.sendsPacket = sendsPacket;
     }
 
-    public WRKeybind(String name, int keyCode, byte behaviorId)
-    {
+    public WRKeybind(String name, int keyCode, byte behaviorId) {
         this(name, keyCode, behaviorId, true);
     }
 
     @Override
-    public void setDown(boolean pressed)
-    {
+    public void setDown(boolean pressed) {
         super.setDown(pressed);
 
-        if (ClientEvents.getPlayer() != null && prevIsPressed != pressed)
-        {
+        if (ClientEvents.getPlayer() != null && prevIsPressed != pressed) {
             byte mods = 0;
             if (Screen.hasAltDown()) mods |= GLFW.GLFW_MOD_ALT;
             if (Screen.hasControlDown()) mods |= GLFW.GLFW_MOD_CONTROL;
@@ -54,8 +49,7 @@ public class WRKeybind extends KeyBinding
         prevIsPressed = pressed;
     }
 
-    public static void registerKeys()
-    {
+    public static void registerKeys() {
         ClientRegistry.registerKeyBinding(new WRKeybind("key.mountKey1", GLFW.GLFW_KEY_V, KeybindHandler.MOUNT_KEY));
         ClientRegistry.registerKeyBinding(new WRKeybind("key.mountKey2", GLFW.GLFW_KEY_G, KeybindHandler.ALT_MOUNT_KEY));
         ClientRegistry.registerKeyBinding(new WRKeybind("key.switch_flight", GLFW.GLFW_KEY_PERIOD, KeybindHandler.SWITCH_FLIGHT, false));

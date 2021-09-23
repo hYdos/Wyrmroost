@@ -14,20 +14,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
-public class DragonEggStackRenderer extends ItemStackTileEntityRenderer
-{
+public class DragonEggStackRenderer extends ItemStackTileEntityRenderer {
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transform, MatrixStack ms, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
-    {
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transform, MatrixStack ms, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         IVertexBuilder builder = ItemRenderer.getFoilBuffer(buffer, DragonEggRenderer.MODEL.renderType(getEggTexture(stack)), false, stack.hasFoil());
         DragonEggRenderer.MODEL.renderToBuffer(ms, builder, combinedLight, combinedOverlay, 1, 1, 1, 1);
     }
 
-    private static ResourceLocation getEggTexture(ItemStack stack)
-    {
+    private static ResourceLocation getEggTexture(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
-        if (tag != null && tag.contains(DragonEggEntity.DATA_DRAGON_TYPE))
-        {
+        if (tag != null && tag.contains(DragonEggEntity.DATA_DRAGON_TYPE)) {
             EntityType<?> type = ModUtils.getEntityTypeByKey(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE));
             if (type != null) return DragonEggRenderer.getDragonEggTexture(type);
         }

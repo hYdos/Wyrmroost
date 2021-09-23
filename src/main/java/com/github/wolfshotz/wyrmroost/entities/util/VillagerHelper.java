@@ -14,10 +14,8 @@ import java.util.Random;
 
 import static net.minecraft.entity.merchant.villager.VillagerTrades.ITrade;
 
-public class VillagerHelper
-{
-    public static void addWandererTrades(WandererTradesEvent evt)
-    {
+public class VillagerHelper {
+    public static void addWandererTrades(WandererTradesEvent evt) {
         List<ITrade> list = evt.getGenericTrades();
 
         list.add(cdForItems(WRItems.BLUE_GEODE.get(), 12, 1, 3));
@@ -28,24 +26,20 @@ public class VillagerHelper
         list.add(new ItemsForItemsTrade(new ItemStack(Items.EMERALD, 6), new ItemStack(WRItems.BLUE_GEODE.get(), 4), 4, 1, 10));
     }
 
-    private static ITrade cdForItems(ItemStack selling, int maxUses, int xp)
-    {
+    private static ITrade cdForItems(ItemStack selling, int maxUses, int xp) {
         return new ItemsForItemsTrade(new ItemStack(WRItems.COIN_DRAGON.get()), selling, maxUses, xp, 0);
     }
 
-    private static ITrade cdForItems(Item item, int count, int maxUses, int xp)
-    {
+    private static ITrade cdForItems(Item item, int count, int maxUses, int xp) {
         return cdForItems(new ItemStack(item, count), maxUses, xp);
     }
 
-    private static class ItemsForItemsTrade implements ITrade
-    {
+    private static class ItemsForItemsTrade implements ITrade {
         private final ItemStack buying1, buying2, selling;
         private final int maxUses, xp;
         private final float priceMultiplier;
 
-        public ItemsForItemsTrade(ItemStack buying1, ItemStack buying2, ItemStack selling, int maxUses, int xp, float priceMultiplier)
-        {
+        public ItemsForItemsTrade(ItemStack buying1, ItemStack buying2, ItemStack selling, int maxUses, int xp, float priceMultiplier) {
             this.buying1 = buying1;
             this.buying2 = buying2;
             this.selling = selling;
@@ -54,15 +48,13 @@ public class VillagerHelper
             this.priceMultiplier = priceMultiplier;
         }
 
-        public ItemsForItemsTrade(ItemStack buying1, ItemStack selling, int maxUses, int xp, float priceMultiplier)
-        {
+        public ItemsForItemsTrade(ItemStack buying1, ItemStack selling, int maxUses, int xp, float priceMultiplier) {
             this(buying1, ItemStack.EMPTY, selling, maxUses, xp, priceMultiplier);
         }
 
         @Nullable
         @Override
-        public MerchantOffer getOffer(Entity p_221182_1_, Random p_221182_2_)
-        {
+        public MerchantOffer getOffer(Entity p_221182_1_, Random p_221182_2_) {
             return new MerchantOffer(buying1, buying2, selling, maxUses, xp, priceMultiplier);
         }
     }
