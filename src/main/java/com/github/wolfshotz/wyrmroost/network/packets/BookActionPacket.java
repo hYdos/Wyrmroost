@@ -5,32 +5,38 @@ import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class BookActionPacket {
+public class BookActionPacket
+{
     public final BookAction action;
 
-    public BookActionPacket(BookAction action) {
+    public BookActionPacket(BookAction action)
+    {
         this.action = action;
     }
 
-    public BookActionPacket(PacketBuffer buf) {
+    public BookActionPacket(FriendlyByteBuf buf)
+    {
         action = BookActions.ACTIONS.get(buf.readInt());
     }
 
-    public void encode(PacketBuffer buf) {
+    public void encode(FriendlyByteBuf buf)
+    {
         buf.writeInt(BookActions.ACTIONS.indexOf(action));
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> context) {
-        ServerPlayerEntity player = context.get().getSender();
+    public boolean handle(Supplier<NetworkEvent.Context> context)
+    {
+        ServerPlayer player = context.get().getSender();
         ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
-        if (stack != null) {
+        if (stack != null)
+        {
             TarragonTomeItem.setAction(action, player, stack);
             return true;
         }

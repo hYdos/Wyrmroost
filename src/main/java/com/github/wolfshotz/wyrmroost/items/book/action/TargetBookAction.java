@@ -5,46 +5,52 @@ import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 
-public class TargetBookAction implements BookAction {
+public class TargetBookAction implements BookAction
+{
     @Override
-    public void onSelected(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
+    public void onSelected(TameableDragonEntity dragon, Player player, ItemStack stack)
+    {
         dragon.clearAI();
         dragon.clearHome();
         dragon.setOrderedToSit(false);
     }
 
     @Override
-    public ActionResultType rightClick(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack) {
-        EntityRayTraceResult ertr = clip(player, dragon);
-        if (ertr != null) {
+    public InteractionResult rightClick(TameableDragonEntity dragon, Player player, ItemStack stack)
+    {
+        EntityHitResult ertr = clip(player, dragon);
+        if (ertr != null)
+        {
             dragon.setTarget((LivingEntity) ertr.getEntity());
             if (player.level.isClientSide)
                 ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.BLAZE_SHOOT, 1, 0.5f);
-            return ActionResultType.sidedSuccess(player.level.isClientSide);
+            return InteractionResult.sidedSuccess(player.level.isClientSide);
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public void render(TameableDragonEntity dragon, MatrixStack ms, float partialTicks) {
-        EntityRayTraceResult rtr = clip(ClientEvents.getPlayer(), dragon);
+    public void render(TameableDragonEntity dragon, PoseStack ms, float partialTicks)
+    {
+        EntityHitResult rtr = clip(ClientEvents.getPlayer(), dragon);
         if (rtr != null && rtr.getEntity() != dragon.getTarget())
-            RenderHelper.renderEntityOutline(rtr.getEntity(), 255, 0, 0, (int) (MathHelper.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
+            RenderHelper.renderEntityOutline(rtr.getEntity(), 255, 0, 0, (int) (Mth.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
     }
 
     @Nullable
-    private EntityRayTraceResult clip(PlayerEntity player, TameableDragonEntity dragon) {
+    private EntityHitResult clip(Player player, TameableDragonEntity dragon)
+    {
         return Mafs.clipEntities(player,
                 40,
                 0.35,
@@ -52,7 +58,8 @@ public class TargetBookAction implements BookAction {
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon) {
+    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
+    {
         return TRANSLATE_PATH + "target";
     }
 }

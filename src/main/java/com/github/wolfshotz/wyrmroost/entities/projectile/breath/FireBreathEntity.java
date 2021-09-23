@@ -4,35 +4,40 @@ import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 
-public class FireBreathEntity extends BreathWeaponEntity {
-    public FireBreathEntity(EntityType<?> type, World level) {
+public class FireBreathEntity extends BreathWeaponEntity
+{
+    public FireBreathEntity(EntityType<?> type, Level level)
+    {
         super(type, level);
     }
 
-    public FireBreathEntity(TameableDragonEntity shooter) {
+    public FireBreathEntity(TameableDragonEntity shooter)
+    {
         super(WREntities.FIRE_BREATH.get(), shooter);
     }
 
     @Override
-    public void tick() {
+    public void tick()
+    {
         super.tick();
 
-        if (isInWater()) {
+        if (isInWater())
+        {
             if (random.nextDouble() <= 0.25d) playSound(SoundEvents.FIRE_EXTINGUISH, 1, 1);
             for (int i = 0; i < 15; i++)
                 level.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.2f, random.nextDouble() * 0.08f, Mafs.nextDouble(random) * 0.2f);
@@ -40,7 +45,7 @@ public class FireBreathEntity extends BreathWeaponEntity {
             return;
         }
 
-        Vector3d motion = getDeltaMovement();
+        Vec3 motion = getDeltaMovement();
         double x = getX() + motion.x + (random.nextGaussian() * 0.2);
         double y = getY() + motion.y + (random.nextGaussian() * 0.2) + 0.5d;
         double z = getZ() + motion.z + (random.nextGaussian() * 0.2);
@@ -48,12 +53,14 @@ public class FireBreathEntity extends BreathWeaponEntity {
     }
 
     @Override
-    public void onBlockImpact(BlockPos pos, Direction direction) {
+    public void onBlockImpact(BlockPos pos, Direction direction)
+    {
         super.onBlockImpact(pos, direction);
         if (level.isClientSide) return;
 
         BlockState state = level.getBlockState(pos);
-        if (CampfireBlock.canLight(state)) {
+        if (CampfireBlock.canLight(state))
+        {
             level.setBlock(pos, state.setValue(BlockStateProperties.LIT, true), 11);
             return;
         }
@@ -64,12 +71,13 @@ public class FireBreathEntity extends BreathWeaponEntity {
             BlockPos offset = pos.relative(direction);
 
             if (level.getBlockState(offset).isAir(level, offset) && (flammability == 1 || random.nextDouble() <= flammability))
-                level.setBlock(offset, AbstractFireBlock.getState(level, offset), 11);
+                level.setBlock(offset, BaseFireBlock.getState(level, offset), 11);
         }
     }
 
     @Override
-    public void onEntityImpact(Entity entity) {
+    public void onEntityImpact(Entity entity)
+    {
         if (level.isClientSide) return;
 
         float damage = (float) shooter.getAttributeValue(WREntities.Attributes.PROJECTILE_DAMAGE.get());
@@ -78,21 +86,24 @@ public class FireBreathEntity extends BreathWeaponEntity {
         if (entity.fireImmune()) damage *= 0.25; // impact damage
         else entity.setSecondsOnFire(8);
 
-        entity.hurt(getDamageSource(random.nextDouble() > 0.2 ? "fireBreath0" : "fireBreath1"), damage);
+        entity.hurt(getDamageSource(random.nextDouble() > 0.2? "fireBreath0" : "fireBreath1"), damage);
     }
 
     @Override
-    public DamageSource getDamageSource(String name) {
+    public DamageSource getDamageSource(String name)
+    {
         return super.getDamageSource(name).setIsFire();
     }
 
     @Override // Because we do it better.
-    public boolean displayFireAnimation() {
+    public boolean displayFireAnimation()
+    {
         return false;
     }
 
     @Override
-    public boolean isOnFire() {
+    public boolean isOnFire()
+    {
         return true;
     }
 }

@@ -1,22 +1,24 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
 import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SnowBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Random;
 
-public class EmberLayerBlock extends SnowBlock {
-    public EmberLayerBlock() {
-        super(AbstractBlock.Properties.of(Material.STONE, MaterialColor.NETHER)
+public class EmberLayerBlock extends SnowLayerBlock
+{
+    public EmberLayerBlock()
+    {
+        super(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.NETHER)
                 .lightLevel(s -> 3)
                 .randomTicks()
                 .strength(0.25f)
@@ -29,12 +31,14 @@ public class EmberLayerBlock extends SnowBlock {
     // inherit ember block behaviours
 
     @Override
-    public void stepOn(World level, BlockPos pos, Entity stepping) {
+    public void stepOn(Level level, BlockPos pos, Entity stepping)
+    {
         WRBlocks.EMBER_BLOCK.get().stepOn(level, pos, stepping);
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld level, BlockPos pos, Random rng) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random rng)
+    {
         WRBlocks.EMBER_BLOCK.get().randomTick(state, level, pos, rng);
     }
 }

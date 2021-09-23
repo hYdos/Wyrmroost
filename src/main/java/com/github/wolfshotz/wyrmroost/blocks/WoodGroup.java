@@ -3,10 +3,10 @@ package com.github.wolfshotz.wyrmroost.blocks;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.SignItem;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SignItem;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -14,7 +14,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WoodGroup extends WoodType {
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WoodButtonBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.WoodType;
+
+public class WoodGroup extends WoodType
+{
     public final RegistryObject<Block> planks;
     public final RegistryObject<Block> log;
     public final RegistryObject<Block> strippedLog;
@@ -33,7 +49,8 @@ public class WoodGroup extends WoodType {
     public final RegistryObject<Block> ladder;
     public final RegistryObject<Block> bookshelf;
 
-    private WoodGroup(String name, Builder builder) {
+    private WoodGroup(String name, Builder builder)
+    {
         super(Wyrmroost.MOD_ID + ":" + name);
 
         this.planks = register(name + "_planks", builder.planks, 5, 20, builder.flammable);
@@ -57,101 +74,124 @@ public class WoodGroup extends WoodType {
         WoodType.register(this);
     }
 
-    public static WoodGroup create(String name, MaterialColor color, MaterialColor logColor) {
+    public static WoodGroup create(String name, MaterialColor color, MaterialColor logColor)
+    {
         return new Builder(color, logColor).build(name);
     }
 
-    public static Builder builder(MaterialColor color, MaterialColor logColor) {
+    public static Builder builder(MaterialColor color, MaterialColor logColor)
+    {
         return new Builder(color, logColor);
     }
 
-    public static Builder builder() {
+    public static Builder builder()
+    {
         return new Builder();
     }
 
-    public Block getPlanks() {
+    public Block getPlanks()
+    {
         return planks.get();
     }
 
-    public Block getLog() {
+    public Block getLog()
+    {
         return log.get();
     }
 
-    public Block getStrippedLog() {
+    public Block getStrippedLog()
+    {
         return strippedLog.get();
     }
 
-    public Block getWood() {
+    public Block getWood()
+    {
         return wood.get();
     }
 
-    public Block getStrippedWood() {
+    public Block getStrippedWood()
+    {
         return strippedWood.get();
     }
 
-    public Block getSlab() {
+    public Block getSlab()
+    {
         return slab.get();
     }
 
-    public Block getPressurePlate() {
+    public Block getPressurePlate()
+    {
         return pressurePlate.get();
     }
 
-    public Block getFence() {
+    public Block getFence()
+    {
         return fence.get();
     }
 
-    public Block getFenceGate() {
+    public Block getFenceGate()
+    {
         return fenceGate.get();
     }
 
-    public Block getTrapDoor() {
+    public Block getTrapDoor()
+    {
         return trapDoor.get();
     }
 
-    public Block getStairs() {
+    public Block getStairs()
+    {
         return stairs.get();
     }
 
-    public Block getButton() {
+    public Block getButton()
+    {
         return button.get();
     }
 
-    public Block getDoor() {
+    public Block getDoor()
+    {
         return door.get();
     }
 
-    public Block getSign() {
+    public Block getSign()
+    {
         return sign.get();
     }
 
-    public Block getWallSign() {
+    public Block getWallSign()
+    {
         return wallSign.get();
     }
 
-    public Block getLadder() {
+    public Block getLadder()
+    {
         return ladder.get();
     }
 
-    public Block getBookshelf() {
+    public Block getBookshelf()
+    {
         return bookshelf.get();
     }
 
-    private static AbstractBlock.Properties props(MaterialColor color) {
-        return AbstractBlock.Properties
+    private static BlockBehaviour.Properties props(MaterialColor color)
+    {
+        return BlockBehaviour.Properties
                 .of(Material.WOOD, color)
                 .strength(2f, 3f)
                 .harvestTool(ToolType.AXE)
                 .sound(SoundType.WOOD);
     }
 
-    private static RegistryObject<Block> register(String name, Supplier<Block> sup, int fireSpread, int fireDestruction, boolean flammable) {
+    private static RegistryObject<Block> register(String name, Supplier<Block> sup, int fireSpread, int fireDestruction, boolean flammable)
+    {
         WRBlocks.BlockExtension extension = WRBlocks.extend();
         if (flammable) extension.flammability(fireSpread, fireDestruction);
         return WRBlocks.register(name, sup, extension);
     }
 
-    public static class Builder {
+    public static class Builder
+    {
         private Supplier<Block> planks;
         private Function<Supplier<Block>, Block> log;
         private Supplier<Block> strippedLog;
@@ -171,7 +211,8 @@ public class WoodGroup extends WoodType {
         private Supplier<Block> bookshelf;
         private boolean flammable = true;
 
-        public Builder(MaterialColor color, MaterialColor logColor) {
+        public Builder(MaterialColor color, MaterialColor logColor)
+        {
             planks = () -> new Block(props(color));
             log = stripped -> new LogBlock(color, logColor, stripped);
             strippedLog = () -> new RotatedPillarBlock(LogBlock.properties(color, logColor));
@@ -182,8 +223,8 @@ public class WoodGroup extends WoodType {
             fence = () -> new FenceBlock(props(color));
             fenceGate = () -> new FenceGateBlock(props(color));
             trapDoor = () -> new TrapDoorBlock(props(color).strength(3f).noOcclusion().isValidSpawn((s, r, p, e) -> false));
-            stairs = planks -> new StairsBlock(planks::defaultBlockState, props(color));
-            button = () -> new WoodButtonBlock(AbstractBlock.Properties.of(Material.DECORATION).noCollission().harvestTool(ToolType.AXE).strength(0.5f).sound(SoundType.WOOD));
+            stairs = planks -> new StairBlock(planks::defaultBlockState, props(color));
+            button = () -> new WoodButtonBlock(BlockBehaviour.Properties.of(Material.DECORATION).noCollission().harvestTool(ToolType.AXE).strength(0.5f).sound(SoundType.WOOD));
             door = () -> new DoorBlock(props(color).strength(3f).noOcclusion());
             wallSign = (group, sign) -> new WRSignBlock.Wall(props(color).noCollission().strength(1f).lootFrom(sign), group);
             sign = group -> new WRSignBlock(props(color).noCollission().strength(1f), group);
@@ -191,35 +232,40 @@ public class WoodGroup extends WoodType {
             bookshelf = BookshelfBlock::new;
         }
 
-        public Builder() {
-        }
+        public Builder() {}
 
-        public Builder nonFlammable() {
+        public Builder nonFlammable()
+        {
             this.flammable = false;
             return this;
         }
 
-        public Builder log(Function<Supplier<Block>, Block> sup) {
+        public Builder log(Function<Supplier<Block>, Block> sup)
+        {
             this.log = sup;
             return this;
         }
 
-        public Builder strippedLog(Supplier<Block> sup) {
+        public Builder strippedLog(Supplier<Block> sup)
+        {
             this.strippedLog = sup;
             return this;
         }
 
-        public Builder wood(Function<Supplier<Block>, Block> sup) {
+        public Builder wood(Function<Supplier<Block>, Block> sup)
+        {
             this.wood = sup;
             return this;
         }
 
-        public Builder strippedWood(Supplier<Block> sup) {
+        public Builder strippedWood(Supplier<Block> sup)
+        {
             this.strippedWood = sup;
             return this;
         }
 
-        public WoodGroup build(String name) {
+        public WoodGroup build(String name)
+        {
             return new WoodGroup(name, this);
         }
     }

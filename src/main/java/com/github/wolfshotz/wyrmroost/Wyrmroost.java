@@ -1,18 +1,30 @@
 package com.github.wolfshotz.wyrmroost;
 
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.network.packets.*;
 import com.github.wolfshotz.wyrmroost.registry.*;
-import net.fabricmc.loader.api.FabricLoader;
+import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Wyrmroost {
+@Mod(Wyrmroost.MOD_ID)
+public class Wyrmroost
+{
     public static final String MOD_ID = "wyrmroost";
     public static final Logger LOG = LogManager.getLogger(MOD_ID);
     public static final SimpleChannel NETWORK = buildChannel();
 
-    public Wyrmroost() {
+    public Wyrmroost()
+    {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         CommonEvents.init();
@@ -34,7 +46,8 @@ public class Wyrmroost {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WRConfig.SERVER);
     }
 
-    private static SimpleChannel buildChannel() {
+    private static SimpleChannel buildChannel()
+    {
         final String PROTOCOL_VERSION = "1.0";
         final SimpleChannel network = NetworkRegistry.ChannelBuilder
                 .named(id("network"))
@@ -54,7 +67,8 @@ public class Wyrmroost {
         return network;
     }
 
-    public static ResourceLocation id(String path) {
+    public static ResourceLocation id(String path)
+    {
         return new ResourceLocation(MOD_ID, path);
     }
 }

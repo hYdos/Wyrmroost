@@ -1,9 +1,10 @@
 package com.github.wolfshotz.wyrmroost.client.model;
 
-import net.minecraft.client.renderer.model.Model;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelPart;
 
-public class WRModelRenderer extends ModelRenderer {
+public class WRModelRenderer extends ModelPart
+{
     public float defaultRotationX;
     public float defaultRotationY;
     public float defaultRotationZ;
@@ -11,26 +12,31 @@ public class WRModelRenderer extends ModelRenderer {
     public float defaultPositionY;
     public float defaultPositionZ;
 
-    public WRModelRenderer(WREntityModel<?> model) {
+    public WRModelRenderer(WREntityModel<?> model)
+    {
         super(model);
         model.boxList.add(this);
     }
 
-    public WRModelRenderer(WREntityModel<?> model, int textureOffsetX, int textureOffsetY) {
+    public WRModelRenderer(WREntityModel<?> model, int textureOffsetX, int textureOffsetY)
+    {
         this(model);
         texOffs(textureOffsetX, textureOffsetY);
     }
 
-    public WRModelRenderer(Model model, int textureOffsetX, int textureOffsetY) {
+    public WRModelRenderer(Model model, int textureOffsetX, int textureOffsetY)
+    {
         super(model);
         texOffs(textureOffsetX, textureOffsetY);
     }
 
-    public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor) {
+    public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor)
+    {
         addBox(offX, offY, offZ, width, height, depth);
     }
 
-    public void setDefaultPose() {
+    public void setDefaultPose()
+    {
         defaultRotationX = xRot;
         defaultRotationY = yRot;
         defaultRotationZ = zRot;
@@ -38,8 +44,9 @@ public class WRModelRenderer extends ModelRenderer {
         defaultPositionY = y;
         defaultPositionZ = z;
     }
-
-    public void reset() {
+    
+    public void reset()
+    {
         xRot = defaultRotationX;
         yRot = defaultRotationY;
         zRot = defaultRotationZ;
@@ -48,7 +55,8 @@ public class WRModelRenderer extends ModelRenderer {
         z = defaultPositionZ;
     }
 
-    public void mirrorRotationsTo(ModelRenderer box) {
+    public void mirrorRotationsTo(ModelPart box)
+    {
         box.xRot = xRot;
         box.yRot = -yRot;
         box.zRot = -zRot;

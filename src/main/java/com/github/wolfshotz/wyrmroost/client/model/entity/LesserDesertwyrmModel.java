@@ -4,15 +4,16 @@ import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.WREntityModel;
 import com.github.wolfshotz.wyrmroost.client.model.WRModelRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * WR Lesser Desertwyrm - Ukan
  * Created using Tabula 7.0.1
  */
-public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity> {
+public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity>
+{
     private final ResourceLocation TEXTURE = Wyrmroost.id(DragonEntityModel.FOLDER + "lesser_desertwyrm/body.png");
 
     public WRModelRenderer body1;
@@ -33,7 +34,8 @@ public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity>
 
     private final WRModelRenderer[] body;
 
-    public LesserDesertwyrmModel() {
+    public LesserDesertwyrmModel()
+    {
         this.texWidth = 30;
         this.texHeight = 30;
         this.wingL = new WRModelRenderer(this, 0, 22);
@@ -105,30 +107,35 @@ public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity>
 
         setDefaultPose();
 
-        body = new WRModelRenderer[]{body1, body2, body3, body4, body5, tail1, tail2, tail3};
+        body = new WRModelRenderer[] {body1, body2, body3, body4, body5, tail1, tail2, tail3};
     }
 
     @Override
-    public ResourceLocation getTexture(LesserDesertwyrmEntity entity) {
+    public ResourceLocation getTexture(LesserDesertwyrmEntity entity)
+    {
         return TEXTURE;
     }
 
     @Override
-    public float getShadowRadius(LesserDesertwyrmEntity entity) {
+    public float getShadowRadius(LesserDesertwyrmEntity entity)
+    {
         return 0;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
+    {
         body1.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void setupAnim(LesserDesertwyrmEntity entity, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch) {
+    public void setupAnim(LesserDesertwyrmEntity entity, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
+    {
         animator().tick(entity, this, partialTicks);
         reset();
 
-        if (entity.isBurrowed()) {
+        if (entity.isBurrowed())
+        {
             body1.xRot = -0.8f;
             body1.y = 26.5f;
             body2.xRot = 0.8f;
@@ -139,9 +146,10 @@ public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity>
             neck.y = bob(0.45f - globalSpeed, 0.15f, false, bob, 0.5f);
         }
 
-        if (entity.getAnimation() != LesserDesertwyrmEntity.BITE_ANIMATION) {
+        if (entity.getAnimation() != LesserDesertwyrmEntity.BITE_ANIMATION)
+        {
             walk(jaw, 0.45f - globalSpeed, 0.1f, false, 0, 0, bob, 0.5f);
-            walk(head, 0.45f - globalSpeed, 0.1f, true, 0, (entity.isBurrowed() ? 0f : 0.5f), bob, 0.5f);
+            walk(head, 0.45f - globalSpeed, 0.1f, true, 0, (entity.isBurrowed()? 0f : 0.5f), bob, 0.5f);
         }
         flap(wingL, 0.45f - globalSpeed, 0.15f, false, 0, 0, bob, 0.5f);
         flap(wingR, 0.45f - globalSpeed, 0.15f, true, 0, 0, bob, 0.5f);
@@ -152,13 +160,14 @@ public class LesserDesertwyrmModel extends WREntityModel<LesserDesertwyrmEntity>
         faceTarget(netHeadYaw, headPitch, 1, head);
     }
 
-    public void biteAnimation() {
+    public void biteAnimation()
+    {
         animator().startKeyframe(4);
         animator().rotate(head, 1f, 0, 0);
         animator().rotate(jaw, -1f, 0, 0);
         animator().move(body1, 0, -1f, 0);
         animator().endKeyframe();
-
+        
         animator().resetKeyframe(7);
     }
 }

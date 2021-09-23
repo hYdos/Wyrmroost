@@ -4,13 +4,16 @@
   "version": "${version}",
 
   "name": "Why-vern craft",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Don't use this. this was a mistake",
   "authors": [
-    "Me!"
+    "hydos",
+    "WolfShotz",
+    "Kingdomall",
+    "Shannieann",
+    "Ukan"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/hYdos/Wyrmroost"
   },
 
   "license": "CC0-1.0",

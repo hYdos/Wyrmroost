@@ -5,18 +5,19 @@ import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.ModelAnimator;
 import com.github.wolfshotz.wyrmroost.client.model.WRModelRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.OverworldDrakeEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 /**
  * WR Overworld Drake - Ukan
  * Created using Tabula 7.0.1
  */
-public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity> {
+public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
+{
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[64]; // some indexes will be left unused
 
     // Easter Egg
@@ -85,7 +86,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
     private final WRModelRenderer[] tailArray;
     private final WRModelRenderer[] toeArray;
 
-    public OverworldDrakeModel() {
+    public OverworldDrakeModel()
+    {
         texWidth = 200;
         texHeight = 200;
         claw12L = new WRModelRenderer(this, 129, 79);
@@ -375,8 +377,10 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(OverworldDrakeEntity drake) {
-        if (drake.hasCustomName()) {
+    public ResourceLocation getTexture(OverworldDrakeEntity drake)
+    {
+        if (drake.hasCustomName())
+        {
             String name = drake.getCustomName().getString();
             if (name.equals("Daisy")) return DAISY;
             if (name.equalsIgnoreCase("Jeb_")) return JEB_;
@@ -388,8 +392,9 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         if (drake.getVariant() == -1) index |= 4;
         else if (drake.getVariant() == 1) index |= 8;
 
-        if (TEXTURES[index] == null) {
-            String path = (index & 1) != 0 ? "child" : (index & 2) != 0 ? "female" : "male";
+        if (TEXTURES[index] == null)
+        {
+            String path = (index & 1) != 0? "child" : (index & 2) != 0? "female" : "male";
             if ((index & 4) != 0) path += "_spe";
             else if ((index & 8) != 0) path += "_sav";
             if (WRConfig.deckTheHalls()) path += "_christmas";
@@ -399,35 +404,41 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
     }
 
     @Override
-    public void scale(OverworldDrakeEntity entity, MatrixStack ms, float partialTicks) {
+    public void scale(OverworldDrakeEntity entity, PoseStack ms, float partialTicks)
+    {
         super.scale(entity, ms, partialTicks);
         ms.scale(2f, 2f, 2f);
         ms.translate(0, 0.75, 0);
     }
 
     @Override
-    public float getShadowRadius(OverworldDrakeEntity entity) {
+    public float getShadowRadius(OverworldDrakeEntity entity)
+    {
         return 1.6f;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack ms, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
+    {
         body1.render(ms, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void postProcess(OverworldDrakeEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks) {
+    public void postProcess(OverworldDrakeEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    {
         renderArmorOverlay(ms, buffer, light);
         if (entity.isSaddled())
             renderTexturedOverlay(SADDLE_LAYER, ms, buffer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
     }
 
     @Override
-    public void setupAnim(OverworldDrakeEntity drake, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch) {
+    public void setupAnim(OverworldDrakeEntity drake, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
+    {
         reset();
         animator().tick(drake, this, partialTicks);
 
-        if (!drake.isInSittingPose() && !drake.isSleeping()) {
+        if (!drake.isInSittingPose() && !drake.isSleeping())
+        {
             // Body bob
             body1.y += bob(1f, 0.3f, false, limbSwing, limbSwingAmount);
 
@@ -451,19 +462,21 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         sit(entity.sitTimer.get(partialTicks));
         sleep(entity.sleepTimer.get(partialTicks));
 
-        if (drake.isSleeping()) {
+        if (drake.isSleeping())
+        {
             eyeL.yRot = 90;
             eyeR.yRot = -90;
         }
 
         idle(bob);
 
-        netHeadYaw = MathHelper.wrapDegrees(netHeadYaw);
+        netHeadYaw = Mth.wrapDegrees(netHeadYaw);
         if (drake.getAnimation() != OverworldDrakeEntity.ROAR_ANIMATION && !drake.isSleeping())
             faceTarget(netHeadYaw, headPitch, 1, neck1, head);
     }
 
-    public void idle(float frame) {
+    public void idle(float frame)
+    {
         chainWave(headArray, 0.45f - globalSpeed, 0.05f, 0d, frame, 0.5f);
         walk(head, 0.45f - globalSpeed, 0.08f, false, 2.5f, 0f, frame, 0.5f);
 
@@ -472,7 +485,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         chainSwing(tailArray, globalSpeed - 0.45f, 0.043f, 2d, frame, 0.5f);
     }
 
-    public void sit(float amount) {
+    public void sit(float amount)
+    {
         setTime(amount);
 
         move(body1, 0, 5.5f, 0);
@@ -503,7 +517,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         rotate(tail5, 0, 0.8f, -0.3f);
     }
 
-    private void sleep(float amount) {
+    private void sleep(float amount)
+    {
         setTime(amount);
 
         rotate(neck1, 1.2f, 0.4f, 0);
@@ -511,7 +526,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         rotate(head, -0.4f, 0.52f, -0.4f);
     }
 
-    public void hornAttackAnimation() {
+    public void hornAttackAnimation()
+    {
         animator().startKeyframe(5);
         animator().move(body1, 0, 2f, 1);
         animator().rotate(body1, 0.3f, 0, 0);
@@ -557,7 +573,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         animator().resetKeyframe(5);
     }
 
-    public void grazeAnimation() {
+    public void grazeAnimation()
+    {
         int tick = entity.getAnimationTick();
 
         animator().startKeyframe(12)
@@ -566,12 +583,14 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         animator().setStaticKeyframe(15)
                 .resetKeyframe(8);
 
-        if (tick >= 8 && tick <= 27) {
+        if (tick >= 8 && tick <= 27)
+        {
             jaw.xRot -= (6 + Math.sin(bob / 2) * 0.25);
         }
     }
 
-    public void roarAnimation() {
+    public void roarAnimation()
+    {
         ModelAnimator animator = animator(); // reduce method calls
 
         animator.startKeyframe(14)
@@ -599,7 +618,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         animator.setStaticKeyframe(60)
                 .resetKeyframe(4);
 
-        if (entity.getAnimationTick() > 10) {
+        if (entity.getAnimationTick() > 10)
+        {
             walk(jaw, globalSpeed + 1.5f, 0.02f, false, 0, 0, bob, 0.5f);
             swing(head, globalSpeed + 1.5f, 0.02f, false, 0, 0, bob, 0.5f);
 
@@ -607,7 +627,8 @@ public class OverworldDrakeModel extends DragonEntityModel<OverworldDrakeEntity>
         }
     }
 
-    public static ResourceLocation texture(String png) {
+    public static ResourceLocation texture(String png)
+    {
         return Wyrmroost.id(FOLDER + "overworld_drake/" + png);
     }
 }

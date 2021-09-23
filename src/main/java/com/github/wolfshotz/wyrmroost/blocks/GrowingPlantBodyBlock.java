@@ -1,27 +1,37 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
 import net.minecraft.block.*;
-import net.minecraft.item.Item;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock {
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.GrowingPlantBodyBlock;
+import net.minecraft.world.level.block.GrowingPlantHeadBlock;
+import net.minecraft.world.level.block.WeepingVinesPlant;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class GrowingPlantBodyBlock extends GrowingPlantBodyBlock
+{
     private final Supplier<Block> tip;
 
-    public GrowingPlantBodyBlock(Properties properties, Supplier<Block> tip) {
-        super(properties, Direction.DOWN, WeepingVinesBlock.SHAPE, false);
+    public GrowingPlantBodyBlock(Properties properties, Supplier<Block> tip)
+    {
+        super(properties, Direction.DOWN, WeepingVinesPlant.SHAPE, false);
         this.tip = tip;
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos)
+    {
         BlockPos below = pos.relative(growthDirection.getOpposite());
         BlockState belowState = worldIn.getBlockState(below);
         Block belowBlock = belowState.getBlock();
@@ -30,9 +40,11 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock {
     }
 
     @Override
-    public boolean isValidBonemealTarget(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient)
+    {
         BlockPos tipPos = getHeadPos(worldIn, pos, state);
-        if (tipPos != null) {
+        if (tipPos != null)
+        {
             BlockState tip = worldIn.getBlockState(tipPos);
             return getHeadBlock().isValidBonemealTarget(worldIn, tipPos, tip, isClient);
         }
@@ -40,20 +52,24 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock {
     }
 
     @Override
-    public void performBonemeal(ServerWorld worldIn, Random rand, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel worldIn, Random rand, BlockPos pos, BlockState state)
+    {
         BlockPos headPos = getHeadPos(worldIn, pos, state);
-        if (headPos != null) {
+        if (headPos != null)
+        {
             BlockState bstate = worldIn.getBlockState(headPos);
-            ((AbstractTopPlantBlock) bstate.getBlock()).performBonemeal(worldIn, rand, headPos, bstate);
+            ((GrowingPlantHeadBlock) bstate.getBlock()).performBonemeal(worldIn, rand, headPos, bstate);
         }
     }
 
     @Nullable
-    private BlockPos getHeadPos(IBlockReader reader, BlockPos pos, BlockState state) {
-        BlockPos.Mutable mutable = pos.mutable();
+    private BlockPos getHeadPos(BlockGetter reader, BlockPos pos, BlockState state)
+    {
+        BlockPos.MutableBlockPos mutable = pos.mutable();
         BlockState bstate = state;
         int j = getHeadBlock().getMaxGrowthHeight();
-        for (int i = 0; i < j && bstate.is(state.getBlock()); i++) {
+        for (int i = 0; i < j && bstate.is(state.getBlock()); i++)
+        {
             if ((bstate = reader.getBlockState(mutable.move(growthDirection))).is(getHeadBlock()))
                 return mutable.immutable();
         }
@@ -62,12 +78,14 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock {
     }
 
     @Override
-    public Item asItem() {
+    public Item asItem()
+    {
         return getHeadBlock().asItem();
     }
 
     @Override
-    protected GrowingPlantBlock getHeadBlock() {
+    protected GrowingPlantBlock getHeadBlock()
+    {
         return (GrowingPlantBlock) tip.get();
     }
 }

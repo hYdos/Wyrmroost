@@ -9,29 +9,29 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.registry.*;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import net.minecraft.block.WoodType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.Atlases;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.SpriteRenderer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.settings.PointOfView;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IDyeableArmorItem;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.ItemSupplier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,10 +44,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
  * Also a client helper class because yes.
  */
 @SuppressWarnings("unused")
-public class ClientEvents {
+public class ClientEvents
+{
     public static boolean keybindFlight = true;
 
-    public static void init() {
+    public static void init()
+    {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -69,10 +71,11 @@ public class ClientEvents {
     //       Mod Bus
     // ====================
 
-    private static void clientSetup(final FMLClientSetupEvent event) {
+    private static void clientSetup(final FMLClientSetupEvent event)
+    {
         WRKeybind.registerKeys();
 
-        ThinLogBlock.consumeThinLogs(b -> RenderTypeLookup.setRenderLayer(b, RenderType.cutout()),
+        ThinLogBlock.consumeThinLogs(b -> ItemBlockRenderTypes.setRenderLayer(b, RenderType.cutout()),
                 WRBlocks.DYING_CORIN_WOOD,
                 WRBlocks.RED_CORIN_WOOD,
                 WRBlocks.TEAL_CORIN_WOOD,
@@ -83,32 +86,36 @@ public class ClientEvents {
         {
             WRIO.screenSetup();
 
-            WoodType.values().filter(w -> w.name().contains(Wyrmroost.MOD_ID)).forEach(Atlases::addWoodType);
+            WoodType.values().filter(w -> w.name().contains(Wyrmroost.MOD_ID)).forEach(Sheets::addWoodType);
 
-            for (TileEntityType<?> entry : ModUtils.getRegistryEntries(WRBlockEntities.REGISTRY))
+            for (BlockEntityType<?> entry : ModUtils.getRegistryEntries(WRBlockEntities.REGISTRY))
                 if (entry instanceof WRBlockEntities<?>) ((WRBlockEntities<?>) entry).callBack();
         });
     }
 
-    private static void bakeParticles(ParticleFactoryRegisterEvent event) {
+    private static void bakeParticles(ParticleFactoryRegisterEvent event)
+    {
         for (ParticleType<?> entry : ModUtils.getRegistryEntries(WRParticles.REGISTRY))
             if (entry instanceof WRParticles<?>) ((WRParticles<?>) entry).bake();
     }
 
-    private static void stitchTextures(TextureStitchEvent.Pre evt) {
-        if (evt.getMap().location() == AtlasTexture.LOCATION_BLOCKS)
+    private static void stitchTextures(TextureStitchEvent.Pre evt)
+    {
+        if (evt.getMap().location() == TextureAtlas.LOCATION_BLOCKS)
             evt.addSprite(BreathWeaponRenderer.BLUE_FIRE);
     }
 
-    private static void itemColors(ColorHandlerEvent.Item evt) {
+    private static void itemColors(ColorHandlerEvent.Item evt)
+    {
         ItemColors handler = evt.getItemColors();
-        IItemColor eggFunc = (stack, tintIndex) -> ((LazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
+        ItemColor eggFunc = (stack, tintIndex) -> ((LazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
         for (LazySpawnEggItem<?> e : LazySpawnEggItem.SPAWN_EGGS) handler.register(eggFunc, e);
 
-        handler.register((stack, index) -> ((IDyeableArmorItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
+        handler.register((stack, index) -> ((DyeableLeatherItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
 
-    private static void bakeModels(ModelRegistryEvent event) {
+    private static void bakeModels(ModelRegistryEvent event)
+    {
         ModelLoader.addSpecialModel(TarragonTomeRenderer.SPRITE_MODEL_LOCATION);
     }
 
@@ -116,58 +123,68 @@ public class ClientEvents {
     //      Forge Bus
     // =====================
 
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
+    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
+    {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof TameableDragonEntity)) return;
-        PointOfView view = mc.options.getCameraType();
+        CameraType view = mc.options.getCameraType();
 
-        if (view != PointOfView.FIRST_PERSON)
-            ((TameableDragonEntity) entity).setMountCameraAngles(view == PointOfView.THIRD_PERSON_BACK, event);
+        if (view != CameraType.FIRST_PERSON)
+            ((TameableDragonEntity) entity).setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
     }
 
     // =====================
 
     // for class loading issues
-    public static Minecraft getClient() {
+    public static Minecraft getClient()
+    {
         return Minecraft.getInstance();
     }
 
-    public static ClientWorld getLevel() {
+    public static ClientLevel getLevel()
+    {
         return getClient().level;
     }
 
-    public static PlayerEntity getPlayer() {
+    public static Player getPlayer()
+    {
         return getClient().player;
     }
 
-    public static Vector3d getProjectedView() {
+    public static Vec3 getProjectedView()
+    {
         return getClient().gameRenderer.getMainCamera().getPosition();
     }
 
-    public static float getPartialTicks() {
+    public static float getPartialTicks()
+    {
         return getClient().getFrameTime();
     }
 
-    public static <T extends Entity & IRendersAsItem> SpriteRenderer<T> spriteRenderer(EntityRendererManager m) {
-        return new SpriteRenderer<>(m, getClient().getItemRenderer());
+    public static <T extends Entity & ItemSupplier> ThrownItemRenderer<T> spriteRenderer(EntityRenderDispatcher m)
+    {
+        return new ThrownItemRenderer<>(m, getClient().getItemRenderer());
     }
 
-    public static double getViewCollision(double wanted, Entity entity) {
-        ActiveRenderInfo info = getClient().gameRenderer.getMainCamera();
-        Vector3d position = info.getPosition();
+    public static double getViewCollision(double wanted, Entity entity)
+    {
+        Camera info = getClient().gameRenderer.getMainCamera();
+        Vec3 position = info.getPosition();
         Vector3f forwards = info.getLookVector();
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 8; ++i)
+        {
             float f = (float) ((i & 1) * 2 - 1);
             float f1 = (float) ((i >> 1 & 1) * 2 - 1);
             float f2 = (float) ((i >> 2 & 1) * 2 - 1);
             f = f * 0.1F;
             f1 = f1 * 0.1F;
             f2 = f2 * 0.1F;
-            Vector3d vector3d = position.add(f, f1, f2);
-            Vector3d vector3d1 = new Vector3d(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
-            RayTraceResult rtr = entity.level.clip(new RayTraceContext(vector3d, vector3d1, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
-            if (rtr.getType() != RayTraceResult.Type.MISS) {
+            Vec3 vector3d = position.add(f, f1, f2);
+            Vec3 vector3d1 = new Vec3(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
+            HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+            if (rtr.getType() != HitResult.Type.MISS)
+            {
                 double distance = rtr.getLocation().distanceTo(position);
                 if (distance < wanted) wanted = distance;
             }

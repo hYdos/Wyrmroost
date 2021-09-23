@@ -3,75 +3,90 @@ package com.github.wolfshotz.wyrmroost.entities.dragon;
 import com.github.wolfshotz.wyrmroost.items.CoinDragonItem;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.entity.ai.attributes.Attributes.*;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.Pose;
 
 /**
  * Simple Entity really, just bob and down in the same spot, and land to sleep at night. Easy.
  */
-public class CoinDragonEntity extends MobEntity {
-    public static final DataParameter<Integer> VARIANT = EntityDataManager.defineId(CoinDragonEntity.class, DataSerializers.INT);
+public class CoinDragonEntity extends Mob
+{
+    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(CoinDragonEntity.class, EntityDataSerializers.INT);
     public static String DATA_VARIANT = "Variant";
 
-    public CoinDragonEntity(EntityType<? extends CoinDragonEntity> type, World worldIn) {
+    public CoinDragonEntity(EntityType<? extends CoinDragonEntity> type, Level worldIn)
+    {
         super(type, worldIn);
     }
 
     @Override
-    protected void registerGoals() {
-        goalSelector.addGoal(0, new LookAtGoal(this, PlayerEntity.class, 4));
+    protected void registerGoals()
+    {
+        goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 4));
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData()
+    {
         super.defineSynchedData();
         entityData.define(VARIANT, getRandom().nextInt(5));
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound)
+    {
         super.addAdditionalSaveData(compound);
         compound.putInt(DATA_VARIANT, getVariant());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound)
+    {
         super.readAdditionalSaveData(compound);
         setVariant(compound.getInt(DATA_VARIANT));
     }
 
-    public int getVariant() {
+    public int getVariant()
+    {
         return entityData.get(VARIANT);
     }
 
-    public void setVariant(int variant) {
+    public void setVariant(int variant)
+    {
         entityData.set(VARIANT, variant);
     }
 
     // move up if too low, move down if too high, else, just bob up and down
     @Override
-    public void travel(Vector3d positionIn) {
+    public void travel(Vec3 positionIn)
+    {
         if (isNoAi()) return;
         double moveSpeed = 0.02;
         double yMot;
@@ -86,8 +101,9 @@ public class CoinDragonEntity extends MobEntity {
     }
 
     @Override
-    protected ActionResultType mobInteract(PlayerEntity player, Hand hand) {
-        ActionResultType stackResult = player.getItemInHand(hand).interactLivingEntity(player, this, hand);
+    protected InteractionResult mobInteract(Player player, InteractionHand hand)
+    {
+        InteractionResult stackResult = player.getItemInHand(hand).interactLivingEntity(player, this, hand);
         if (stackResult.consumesAction()) return stackResult;
 
         ItemEntity itemEntity = new ItemEntity(level, getX(), getY(), getZ(), getItemStack());
@@ -97,71 +113,83 @@ public class CoinDragonEntity extends MobEntity {
         itemEntity.setDeltaMovement(x * 0.1, y * 0.1 + Math.sqrt(Math.sqrt(x * x + y * y + z * z)) * 0.08, z * 0.1);
         level.addFreshEntity(itemEntity);
         remove();
-        return ActionResultType.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose pose, EntitySize size) {
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions size)
+    {
         return size.height * 0.8645f;
     }
 
     @Override
-    public ItemStack getPickedResult(RayTraceResult target) {
+    public ItemStack getPickedResult(HitResult target)
+    {
         return new ItemStack(WRItems.COIN_DRAGON.get());
     }
 
     @Override
-    public boolean requiresCustomPersistence() {
+    public boolean requiresCustomPersistence()
+    {
         return true;
     }
 
     @Override
-    public boolean isSuppressingSlidingDownLadder() {
+    public boolean isSuppressingSlidingDownLadder()
+    {
         return false;
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier) {
+    public boolean causeFallDamage(float distance, float damageMultiplier)
+    {
         return false;
     }
 
     @Override
-    protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
+    protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos)
+    {
     }
 
     @Nullable
     @Override
-    protected SoundEvent getAmbientSound() {
+    protected SoundEvent getAmbientSound()
+    {
         return WRSounds.ENTITY_COINDRAGON_IDLE.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    {
         return WRSounds.ENTITY_COINDRAGON_IDLE.get();
     }
 
     @Nullable
     @Override
-    protected SoundEvent getDeathSound() {
+    protected SoundEvent getDeathSound()
+    {
         return WRSounds.ENTITY_COINDRAGON_IDLE.get();
     }
 
-    public double getAltitude() {
-        BlockPos.Mutable pos = blockPosition().mutable().move(0, -1, 0);
+    public double getAltitude()
+    {
+        BlockPos.MutableBlockPos pos = blockPosition().mutable().move(0, -1, 0);
         while (pos.getY() > 0 && !level.getBlockState(pos).canOcclude()) pos.setY(pos.getY() - 1);
         return getY() - pos.getY();
     }
 
-    public ItemStack getItemStack() {
+    public ItemStack getItemStack()
+    {
         ItemStack stack = new ItemStack(WRItems.COIN_DRAGON.get());
         stack.getOrCreateTag().put(CoinDragonItem.DATA_ENTITY, serializeNBT());
         if (hasCustomName()) stack.setHoverName(getCustomName());
         return stack;
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder getAttributeMap()
+    {
+        return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 4)
                 .add(MOVEMENT_SPEED, 0.02);
     }

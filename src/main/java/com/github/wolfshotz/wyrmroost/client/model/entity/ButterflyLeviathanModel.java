@@ -6,26 +6,27 @@ import com.github.wolfshotz.wyrmroost.client.model.WRModelRenderer;
 import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * butterfly leviathan - Kingdomall
  * Created using Tabula 8.0.0
  */
-public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviathanEntity> {
+public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviathanEntity>
+{
     public static final ResourceLocation BLUE = texture("body_blue.png");
     public static final ResourceLocation PURPLE = texture("body_purple.png");
     // Special
@@ -33,10 +34,10 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     // Glow
     public static final ResourceLocation GLOW = texture("activated.png");
 
-    private static final RenderMaterial CONDUIT_CAGE = new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation("entity/conduit/cage"));
-    private static final RenderMaterial CONDUIT_WIND = new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation("entity/conduit/wind"));
-    private static final RenderMaterial CONDUIT_VERTICAL_WIND = new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation("entity/conduit/wind_vertical"));
-    private static final RenderMaterial CONDUIT_OPEN_EYE = new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation("entity/conduit/open_eye"));
+    private static final Material CONDUIT_CAGE = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("entity/conduit/cage"));
+    private static final Material CONDUIT_WIND = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("entity/conduit/wind"));
+    private static final Material CONDUIT_VERTICAL_WIND = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("entity/conduit/wind_vertical"));
+    private static final Material CONDUIT_OPEN_EYE = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation("entity/conduit/open_eye"));
 
     public WRModelRenderer body1;
     public WRModelRenderer body2;
@@ -92,11 +93,12 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     public WRModelRenderer[] tailArray;
     public final WRModelRenderer[] headArray;
 
-    public ModelRenderer conduitEye;
-    public ModelRenderer conduitWind;
-    public ModelRenderer conduitCage;
+    public ModelPart conduitEye;
+    public ModelPart conduitWind;
+    public ModelPart conduitCage;
 
-    public ButterflyLeviathanModel() {
+    public ButterflyLeviathanModel()
+    {
         this.texWidth = 150;
         this.texHeight = 250;
         this.topWingFinPhalangeL2_1 = new WRModelRenderer(this, 21, 173);
@@ -325,9 +327,9 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         tailArray = new WRModelRenderer[]{tail1, tail2, tail3, tail4, tail5, tail6};
         headArray = new WRModelRenderer[]{neck1, neck2, neck3, head};
 
-        this.conduitEye = new ModelRenderer(16, 16, 0, 0);
-        this.conduitWind = new ModelRenderer(64, 32, 0, 0);
-        this.conduitCage = new ModelRenderer(32, 16, 0, 0);
+        this.conduitEye = new ModelPart(16, 16, 0, 0);
+        this.conduitWind = new ModelPart(64, 32, 0, 0);
+        this.conduitCage = new ModelPart(32, 16, 0, 0);
         this.conduitEye.addBox(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, 0.01F);
         this.conduitWind.addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F);
         this.conduitCage.addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
@@ -336,8 +338,10 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public ResourceLocation getTexture(ButterflyLeviathanEntity entity) {
-        switch (entity.getVariant()) {
+    public ResourceLocation getTexture(ButterflyLeviathanEntity entity)
+    {
+        switch (entity.getVariant())
+        {
             default:
             case 0:
                 return BLUE;
@@ -349,38 +353,44 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public float getShadowRadius(ButterflyLeviathanEntity entity) {
+    public float getShadowRadius(ButterflyLeviathanEntity entity)
+    {
         return 2f;
     }
 
     @Override
-    public void scale(ButterflyLeviathanEntity entity, MatrixStack ms, float partialTicks) {
+    public void scale(ButterflyLeviathanEntity entity, PoseStack ms, float partialTicks)
+    {
         super.scale(entity, ms, partialTicks);
         ms.scale(3f, 3f, 3f);
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
+    {
         body1.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void postProcess(ButterflyLeviathanEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks) {
-        float powerAlpha = MathHelper.clamp(entity.lightningCooldown, 1, 255);
-        if (powerAlpha > 0) {
-            IVertexBuilder builder = buffer.getBuffer(RenderHelper.getTranslucentGlow(GLOW));
+    public void postProcess(ButterflyLeviathanEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    {
+        float powerAlpha = Mth.clamp(entity.lightningCooldown, 1, 255);
+        if (powerAlpha > 0)
+        {
+            VertexConsumer builder = buffer.getBuffer(RenderHelper.getTranslucentGlow(GLOW));
             renderToBuffer(ms, builder, 15728640, OverlayTexture.NO_OVERLAY, 1, 1, 1, powerAlpha);
         }
 
         renderConduit(ms, buffer, light, age, yaw, pitch);
     }
 
-    private void renderConduit(MatrixStack ms, IRenderTypeBuffer buffer, int light, float age, float yaw, float pitch) {
+    private void renderConduit(PoseStack ms, MultiBufferSource buffer, int light, float age, float yaw, float pitch)
+    {
         if ((entity.getAnimation() == ButterflyLeviathanEntity.CONDUIT_ANIMATION && entity.getAnimationTick() < 15) || !entity.hasConduit())
             return;
 
         float rotation = (age * -0.0375f) * (180f / Mafs.PI);
-        float translation = MathHelper.sin(age * 0.1F) / 2.0F + 0.5F;
+        float translation = Mth.sin(age * 0.1F) / 2.0F + 0.5F;
         translation = translation * translation + translation;
 
         ms.pushPose();
@@ -403,7 +413,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         ms.translate(0, 0.5d, 0);
         if (gen == 1) ms.mulPose(Vector3f.XP.rotationDegrees(90));
         else if (gen == 2) ms.mulPose(Vector3f.ZP.rotationDegrees(90));
-        IVertexBuilder builder = (gen == 1 ? CONDUIT_VERTICAL_WIND : CONDUIT_WIND).buffer(buffer, RenderType::entityCutoutNoCull);
+        VertexConsumer builder = (gen == 1? CONDUIT_VERTICAL_WIND : CONDUIT_WIND).buffer(buffer, RenderType::entityCutoutNoCull);
         conduitWind.render(ms, builder, light, OverlayTexture.NO_OVERLAY);
         ms.popPose();
 
@@ -416,7 +426,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         ms.popPose();
 
         // Eye
-        ActiveRenderInfo camera = ClientEvents.getClient().getEntityRenderDispatcher().camera;
+        Camera camera = ClientEvents.getClient().getEntityRenderDispatcher().camera;
         ms.pushPose();
         ms.translate(0, (0.3F + translation * 0.2F), 0);
         ms.mulPose(Vector3f.YP.rotationDegrees(camera.getYRot()));
@@ -429,22 +439,26 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public void setupAnim(ButterflyLeviathanEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch) {
+    public void setupAnim(ButterflyLeviathanEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
+    {
         reset();
         animator().tick(entity, this, partialTicks);
 
-        if (entity.beached) {
+        if (entity.beached)
+        {
             bottomWingFinPhalangeL1.zRot = -0.65f;
             bottomWingFinPhalangeL2.zRot = 0.65f;
             bottomWingFinPhalangeR1.zRot = 0.65f;
             bottomWingFinPhalangeR2.zRot = -0.65f;
         }
 
-        if (entity.isInWater()) {
+        if (entity.isInWater())
+        {
             chainSwing(headArray, globalSpeed - 0.1f, 0.15f, 3f, limbSwing, limbSwingAmount);
             chainSwing(ArrayUtils.addAll(tailArray, body2), globalSpeed - 0.1f, 0.2f, -3, limbSwing, limbSwingAmount);
 
-            if (entity.isUnderWater()) {
+            if (entity.isUnderWater())
+            {
                 flap(topWingFinPhalangeR1, globalSpeed - 0.1f, 0.75f, false, 0, -0.25f, limbSwing, limbSwingAmount);
                 walk(topWingFinPhalangeR1, globalSpeed - 0.1f, 0.35f, false, 0.75f, 0, limbSwing, limbSwingAmount);
                 flap(topWingFinPhalangeR2, globalSpeed - 0.1f, 0.75f, false, -2, -0.3f, limbSwing, limbSwingAmount);
@@ -465,7 +479,9 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
                 flap(bottomWingFinPhalangeL2, globalSpeed - 0.1f, 0.5f, true, -2f, 0.3f, limbSwing, limbSwingAmount);
                 flap(bottomWingFinMembraneL3, globalSpeed - 0.1f, 0.5f, true, -2, 0.17f, limbSwing, limbSwingAmount);
             }
-        } else if (!entity.isJumpingOutOfWater()) {
+        }
+        else if (!entity.isJumpingOutOfWater())
+        {
             if (limbSwingAmount > 0.152f) limbSwingAmount = 0.152f;
             swing(bottomWingFinPhalangeL1, globalSpeed, 2f, false, 0, 0, limbSwing, limbSwingAmount);
             flap(bottomWingFinPhalangeL1, globalSpeed, 1f, false, -1f, 0.25f, limbSwing, limbSwingAmount);
@@ -490,7 +506,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
 
         idle(bob);
 
-        if (!entity.beached) {
+        if (!entity.beached)
+        {
             body1.xRot = pitch * Mafs.PI / 180f;
             pitch = 0;
         }
@@ -499,8 +516,10 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
 
-    public void idle(float bob) {
-        if (entity.isInWater()) {
+    public void idle(float bob)
+    {
+        if (entity.isInWater())
+        {
             chainWave(headArray, globalSpeed - 0.45f, 0.05f, 2, bob, 0.5f);
             chainSwing(tailArray, globalSpeed - 0.44f, 0.1f, -2, bob, 0.5f);
             flap(topWingFinPhalangeL1, globalSpeed - 0.45f, 0.15f, false, 0, 0, bob, 0.5f);
@@ -511,7 +530,9 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
             flap(bottomWingFinPhalangeL2, globalSpeed - 0.45f, 0.15f, true, 0.75f, 0, bob, 0.5f);
             flap(bottomWingFinPhalangeR1, globalSpeed - 0.45f, 0.15f, true, 0, 0, bob, 0.5f);
             flap(bottomWingFinPhalangeR2, globalSpeed - 0.45f, 0.15f, false, 0.75f, 0, bob, 0.5f);
-        } else if (!entity.isJumpingOutOfWater()) {
+        }
+        else if (!entity.isJumpingOutOfWater())
+        {
             chainWave(headArray, globalSpeed - 0.45f, 0.07f, -2, bob, 0.5f);
             chainSwing(tailArray, globalSpeed - 0.46f, 0.4f, -3, bob, 0.5f);
             flap(topWingFinPhalangeL1, globalSpeed - 0.43f, 0.15f, false, 0, 0, bob, 0.5f);
@@ -523,7 +544,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
             swing(topWingFinPhalangeR2, globalSpeed - 0.45f, 0.1f, true, 0.5f, 0, bob, 0.5f);
             flap(topWingFinPhalangeR2, globalSpeed - 0.44f, 0.1f, true, 0.5f, 0, bob, 0.5f);
 
-            if (entity.isInSittingPose()) {
+            if (entity.isInSittingPose())
+            {
                 flap(bottomWingFinPhalangeL1, globalSpeed - 0.43f, -0.1f, false, 0.25f, 0, bob, 0.5f);
                 swing(bottomWingFinPhalangeL1, globalSpeed - 0.45f, 0.075f, false, 0.75f, 0, bob, 0.5f);
                 flap(bottomWingFinPhalangeR1, globalSpeed - 0.43f, -0.1f, true, 0.25f, 0, bob, 0.5f);
@@ -532,7 +554,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         }
     }
 
-    public void roarAnimation() {
+    public void roarAnimation()
+    {
         animator().startKeyframe(10)
                 .rotate(neck1, -0.3f, 0, 0)
                 .rotate(neck2, 0.1f, 0, 0)
@@ -550,7 +573,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         animator().resetKeyframe(6);
     }
 
-    public void conduitAnimation() {
+    public void conduitAnimation()
+    {
         animator().startKeyframe(8)
                 .rotate(neck1, -0.3f, 0, 0)
                 .rotate(mouthTop, -0.3f, 0, 0)
@@ -561,7 +585,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         animator().resetKeyframe(8);
     }
 
-    public void biteAnimation() {
+    public void biteAnimation()
+    {
         animator().startKeyframe(6);
         animator().rotate(neck1, -0.6f, 0, 0);
         animator().rotate(neck2, 0.3f, 0, 0);
@@ -576,7 +601,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         animator().resetKeyframe(8);
     }
 
-    private void beach(float v) {
+    private void beach(float v)
+    {
         setTime(v);
 
         rotate(neck1, -0.6f, 0, 0);
@@ -585,7 +611,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         rotate(head, 0.3f, 0, 0);
     }
 
-    private void swim(float v) {
+    private void swim(float v)
+    {
         setTime(v);
 
         rotate(topWingFinPhalangeL1, 0, 1.05f, 0);
@@ -594,7 +621,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         rotate(topWingFinPhalangeR2, 0, -0.5f, 0);
     }
 
-    private void sit(float v) {
+    private void sit(float v)
+    {
         setTime(v);
 
         rotate(bottomWingFinPhalangeL1, -0.35f, 1.05f, -0.35f);
@@ -603,7 +631,8 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
         rotate(bottomWingFinPhalangeR2, 0, -0.5f, 0.1f);
     }
 
-    private static ResourceLocation texture(String png) {
+    private static ResourceLocation texture(String png)
+    {
         return Wyrmroost.id(FOLDER + "butterfly_leviathan/" + png);
     }
 }

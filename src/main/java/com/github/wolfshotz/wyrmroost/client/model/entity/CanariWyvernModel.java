@@ -4,11 +4,11 @@ import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.WRModelRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.CanariWyvernEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Random;
 
@@ -16,7 +16,8 @@ import java.util.Random;
  * WRCanariWyvern - Ukan
  * Created using Tabula 7.0.1
  */
-public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
+public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
+{
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[10];
 
     // Easter egg
@@ -92,7 +93,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
     // false == left, true == right
     public boolean preenSide = false;
 
-    public CanariWyvernModel() {
+    public CanariWyvernModel()
+    {
         texWidth = 150;
         texHeight = 150;
         feathers3L = new WRModelRenderer(this, 87, 85);
@@ -382,55 +384,64 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
 
         setDefaultPose();
 
-        headArray = new WRModelRenderer[]{head_1, neck1, neck2};
-        tailArray = new WRModelRenderer[]{tail1, tail2, tail3, tail4};
+        headArray = new WRModelRenderer[] {head_1, neck1, neck2};
+        tailArray = new WRModelRenderer[] {tail1, tail2, tail3, tail4};
     }
 
     @Override
-    public ResourceLocation getTexture(CanariWyvernEntity canari) {
-        if (canari.hasCustomName()) {
+    public ResourceLocation getTexture(CanariWyvernEntity canari)
+    {
+        if (canari.hasCustomName())
+        {
             String name = canari.getCustomName().getString();
             if (name.equals("Rudy")) return RUDY;
             else if (name.equals("Lady Everlyn Winklestein") && !canari.isMale()) return LADY;
         }
 
-        int texture = canari.isMale() ? 0 : 5 + canari.getVariant();
+        int texture = canari.isMale()? 0 : 5 + canari.getVariant();
         if (TEXTURES[texture] == null)
-            return TEXTURES[texture] = texture("body_" + canari.getVariant() + (canari.isMale() ? "m" : "f") + ".png");
+            return TEXTURES[texture] = texture("body_" + canari.getVariant() + (canari.isMale()? "m" : "f") + ".png");
         return TEXTURES[texture];
     }
 
     @Override
-    public float getShadowRadius(CanariWyvernEntity entity) {
+    public float getShadowRadius(CanariWyvernEntity entity)
+    {
         return 0.5f;
     }
 
     @Override
-    public void scale(CanariWyvernEntity entity, MatrixStack ms, float partialTicks) {
+    public void scale(CanariWyvernEntity entity, PoseStack ms, float partialTicks)
+    {
         super.scale(entity, ms, partialTicks);
         ms.scale(0.5f, 0.5f, 0.5f);
         ms.translate(0, 1, 0);
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack ms, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
+    {
         body1.render(ms, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void setupAnim(CanariWyvernEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch) {
+    public void setupAnim(CanariWyvernEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
+    {
         reset();
         animator().tick(entity, this, partialTicks);
         setInitialPositions();
 
         this.bob = bob;
 
-        if (entity.isFlying()) {
+        if (entity.isFlying())
+        {
             flap(wing1L, globalSpeed, 1f, false, 0, 0, limbSwing, limbSwingAmount);
             flap(wing2L, globalSpeed, 0.75f, false, -1.5f, 0, limbSwing, limbSwingAmount);
             flap(wing1R, globalSpeed, 1f, true, 0, 0, limbSwing, limbSwingAmount);
             flap(wing2R, globalSpeed, 0.75f, true, -1.5f, 0, limbSwing, limbSwingAmount);
-        } else {
+        }
+        else
+        {
             wing1L.zRot -= limbSwingAmount * 0.35;
             wing1R.zRot += limbSwingAmount * 0.35;
 
@@ -464,15 +475,17 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
     }
 
     // Standing pose without the t-pose wings shit
-    public void setInitialPositions() {
-        if (entity.isFlying()) {
+    public void setInitialPositions()
+    {
+        if (entity.isFlying())
+        {
             body2.xRot = 0f;
 
-            for (ModelRenderer model : headArray) model.xRot = 0f;
+            for (ModelPart model : headArray) model.xRot = 0f;
             head.xRot = 0f;
             head_1.xRot = 0.5f;
 
-            for (ModelRenderer model : tailArray) model.xRot = 0f;
+            for (ModelPart model : tailArray) model.xRot = 0f;
 
             leg1L.xRot = -1f;
             leg2L.xRot = 2.7f;
@@ -489,7 +502,9 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
             claw1R.xRot = 0.2f;
             claw2R.xRot = 0.2f;
             claw3R.xRot = 0.2f;
-        } else {
+        }
+        else
+        {
             // left wing
             wing1L.xRot = 1f;
             wing1L.yRot = -0.8f;
@@ -522,16 +537,18 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         }
     }
 
-    public void sitPose() {
-        boolean shouldSwap = entity.getVehicle() instanceof PlayerEntity && entity.getVehicle().getPassengers().indexOf(entity) == 1;
-        float tailRot = shouldSwap ? 0.5f : -0.5f;
+    public void sitPose()
+    {
+        boolean shouldSwap = entity.getVehicle() instanceof Player && entity.getVehicle().getPassengers().indexOf(entity) == 1;
+        float tailRot = shouldSwap? 0.5f : -0.5f;
 
         body1.y = 24f;
 
         wing1L.xRot = 0.6f;
         wing1R.xRot = 0.6f;
 
-        if (entity.getVehicle() instanceof PlayerEntity) {
+        if (entity.getVehicle() instanceof Player)
+        {
             wing1L.yRot = -1.85f;
             wing1R.yRot = 1.85f;
             tailRot *= 0.7f;
@@ -557,7 +574,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
     }
 
 
-    public void sleepPose() {
+    public void sleepPose()
+    {
         sitPose();
 
         neck1.xRot = -0.8f;
@@ -565,13 +583,17 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         head.xRot = 1.8f;
     }
 
-    public void idle(float frame) {
-        if (entity.isFlying()) {
+    public void idle(float frame)
+    {
+        if (entity.isFlying())
+        {
             chainWave(headArray, globalSpeed - 0.1f, 0.05f, 2.5, frame, 1f);
             chainWave(tailArray, globalSpeed - 0.1f, 0.025f, -2.5, frame, 1f);
             walk(leg3L, globalSpeed - 0.1f, 0.01f, false, 0, 0, frame, 1f);
             walk(leg3R, globalSpeed - 0.1f, 0.01f, false, 0, 0, frame, 1f);
-        } else {
+        }
+        else
+        {
             body1.xRot += Math.cos(frame * (globalSpeed - 0.45f)) * 0.08f;
             body2.xRot -= Math.cos(frame * (globalSpeed - 0.45f)) * 0.08f;
 
@@ -586,7 +608,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         }
     }
 
-    public void flapWingsAnimation() {
+    public void flapWingsAnimation()
+    {
         // extend wings
         animator().startKeyframe(5);
 
@@ -767,7 +790,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         animator().resetKeyframe(5);
     }
 
-    public void preenAnimation() {
+    public void preenAnimation()
+    {
         int tick = animator().getEntity().getAnimationTick();
         if (tick == 0) preenSide = new Random().nextBoolean();
 
@@ -779,7 +803,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
                 animator().rotate(box, 0.5f, 0.7f, 0);
             animator().rotate(head, -1f, 2, 0);
             animator().rotate(wing1R, -0.5f, 0.2f, 0);
-        } else // left side
+        }
+        else // left side
         {
             for (WRModelRenderer box : headArray)
                 animator().rotate(box, 0.5f, -0.7f, 0);
@@ -794,10 +819,12 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         if (tick > 8 && tick < 28) flap(head, globalSpeed + 0.5f, 0.25f, false, 0, 0, bob, 0.5f);
     }
 
-    public void threatAnimation() {
+    public void threatAnimation()
+    {
         int tick = animator().getEntity().getAnimationTick();
         animator().startKeyframe(8);
-        for (WRModelRenderer box : tailArray) {
+        for (WRModelRenderer box : tailArray)
+        {
             animator().rotate(box, 0.6f, 0, 0);
             if (tick < 20) walk(box, globalSpeed + 3f, 0.025f, false, 0, 0, bob, 0.5f);
         }
@@ -817,8 +844,10 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         animator().resetKeyframe(8);
     }
 
-    public void attackAnimation() {
-        if (entity.isFlying()) {
+    public void attackAnimation()
+    {
+        if (entity.isFlying())
+        {
             animator().startKeyframe(5);
             animator().rotate(body1, -0.35f, 0, 0);
             animator().rotate(neck1, 0.5f, 0, 0);
@@ -837,7 +866,9 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
             animator().endKeyframe();
             animator().setStaticKeyframe(5);
             animator().resetKeyframe(5);
-        } else {
+        }
+        else
+        {
             animator().startKeyframe(5);
             animator().rotate(body1, 0.5f, 0, 0);
             animator().move(body1, 0, 1.25f, 0);
@@ -866,7 +897,8 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity> {
         }
     }
 
-    private static ResourceLocation texture(String png) {
+    private static ResourceLocation texture(String png)
+    {
         return Wyrmroost.id(FOLDER + "canari_wyvern/" + png);
     }
 }

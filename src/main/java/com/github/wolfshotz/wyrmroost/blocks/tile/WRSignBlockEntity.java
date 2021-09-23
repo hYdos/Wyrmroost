@@ -1,12 +1,14 @@
 package com.github.wolfshotz.wyrmroost.blocks.tile;
 
 import com.github.wolfshotz.wyrmroost.registry.WRBlockEntities;
-import net.minecraft.tileentity.SignTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public class WRSignBlockEntity extends SignTileEntity {
+public class WRSignBlockEntity extends SignBlockEntity
+{
     @Override
-    public TileEntityType<?> getType() {
+    public BlockEntityType<?> getType()
+    {
         return WRBlockEntities.CUSTOM_SIGN.get();
     }
 }

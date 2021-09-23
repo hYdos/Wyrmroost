@@ -10,16 +10,16 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.registry.WRIO;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.sun.javafx.geom.Vec2d;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.text.ITextComponent;
+import com.github.wolfshotz.wyrmroost.util.Vector2D;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -30,14 +30,16 @@ import java.util.List;
 
 import static com.github.wolfshotz.wyrmroost.client.ClientEvents.getClient;
 
-public class BookContainer extends Container {
+public class BookContainer extends AbstractContainerMenu
+{
     public final TameableDragonEntity dragon;
-    public final PlayerInventory playerInv;
+    public final Inventory playerInv;
     public final List<BookAction> actions = new ArrayList<>();
-    public final List<ITextComponent> toolTips = new ArrayList<>();
+    public final List<Component> toolTips = new ArrayList<>();
     public final List<CollapsibleWidget> collapsibles = new ArrayList<>();
 
-    public BookContainer(int id, PlayerInventory playerInv, TameableDragonEntity dragon) {
+    public BookContainer(int id, Inventory playerInv, TameableDragonEntity dragon)
+    {
         super(WRIO.DRAGON_STAFF.get(), id);
         this.dragon = dragon;
         this.playerInv = playerInv;
@@ -50,63 +52,75 @@ public class BookContainer extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player)
+    {
         return dragon.isAlive();
     }
 
     //for public access
     @Override
-    public Slot addSlot(Slot slot) {
+    public Slot addSlot(Slot slot)
+    {
         return super.addSlot(slot);
     }
 
-    public BookContainer slot(Slot slot) {
+    public BookContainer slot(Slot slot)
+    {
         addSlot(slot);
         return this;
     }
 
-    public BookContainer addAction(BookAction... actions) {
+    public BookContainer addAction(BookAction... actions)
+    {
         if (dragon.level.isClientSide) Collections.addAll(this.actions, actions);
         return this;
     }
 
-    public BookContainer addTooltip(ITextComponent text) {
+    public BookContainer addTooltip(Component text)
+    {
         if (dragon.level.isClientSide) toolTips.add(text);
         return this;
     }
 
-    public BookContainer addCollapsible(CollapsibleWidget widget) {
+    public BookContainer addCollapsible(CollapsibleWidget widget)
+    {
         widget.slots.forEach(this::addSlot);
         collapsibles.add(widget);
         return this;
     }
 
-    public static Slot3D accessorySlot(DragonInventory i, int index, int x, int y, int z, @Nonnull Vec2d iconUV) {
+    public static Slot3D accessorySlot(DragonInventory i, int index, int x, int y, int z, @Nonnull Vector2D iconUV)
+    {
         return (Slot3D) new Slot3D(i, index, x, y, z)
                 .condition(() -> getClient().screen instanceof DragonControlScreen && ((DragonControlScreen) getClient().screen).showAccessories())
                 .iconUV(iconUV);
     }
 
-    public static CollapsibleWidget collapsibleWidget(int u0, int v0, int width, int height, byte direction) {
+    public static CollapsibleWidget collapsibleWidget(int u0, int v0, int width, int height, byte direction)
+    {
         return new CollapsibleWidget(u0, v0, width, height, direction, DragonControlScreen.SPRITES);
     }
 
-    public static BookContainer factory(int id, PlayerInventory playerInv, PacketBuffer buf) {
+    public static BookContainer factory(int id, Inventory playerInv, FriendlyByteBuf buf)
+    {
         return new BookContainer(id, playerInv, fromBytes(buf));
     }
 
-    public static void open(ServerPlayerEntity player, TameableDragonEntity dragon) {
+    public static void open(ServerPlayer player, TameableDragonEntity dragon)
+    {
         NetworkHooks.openGui(player, dragon, b -> toBytes(dragon, b));
     }
 
-    private static void toBytes(TameableDragonEntity entity, PacketBuffer buffer) {
+    private static void toBytes(TameableDragonEntity entity, FriendlyByteBuf buffer)
+    {
         buffer.writeVarInt(entity.getId());
 
-        Collection<EffectInstance> effects = entity.getActiveEffects();
+        Collection<MobEffectInstance> effects = entity.getActiveEffects();
         buffer.writeVarInt(effects.size());
 
-        for (EffectInstance instance : effects) {
-            buffer.writeByte(Effect.getId(instance.getEffect()) & 255);
+        for (MobEffectInstance instance : effects)
+        {
+            buffer.writeByte(MobEffect.getId(instance.getEffect()) & 255);
             buffer.writeVarInt(Math.min(instance.getDuration(), 32767));
             buffer.writeByte(instance.getAmplifier() & 255);
 
@@ -120,14 +134,16 @@ public class BookContainer extends Container {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private static TameableDragonEntity fromBytes(PacketBuffer buf) {
+    private static TameableDragonEntity fromBytes(FriendlyByteBuf buf)
+    {
         TameableDragonEntity dragon = (TameableDragonEntity) ClientEvents.getLevel().getEntity(buf.readVarInt());
         dragon.getActiveEffectsMap().clear();
 
         int series = buf.readVarInt();
-        for (int i = 0; i < series; i++) {
+        for (int i = 0; i < series; i++)
+        {
             byte flags;
-            EffectInstance instance = new EffectInstance(Effect.byId(buf.readByte() & 0xFF),
+            MobEffectInstance instance = new MobEffectInstance(MobEffect.byId(buf.readByte() & 0xFF),
                     buf.readVarInt(),
                     buf.readByte(),
                     ((flags = buf.readByte()) & 1) == 1,

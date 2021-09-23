@@ -4,16 +4,17 @@ import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.WRModelRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.SilverGliderEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * WRSilverGlider - Kingdomall
  * Created using Tabula 7.1.0
  */
-public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
+public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
+{
     public static final ResourceLocation[] MALE_TEXTURES = new ResourceLocation[6]; // includes glow
     // Constant textures
     public static final ResourceLocation FEMALE = texture("female.png");
@@ -88,7 +89,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
     private final WRModelRenderer[] tailArray;
     private final WRModelRenderer[] toeArray;
 
-    public SilverGliderModel() {
+    public SilverGliderModel()
+    {
         texWidth = 160;
         texHeight = 125;
         toeL1 = new WRModelRenderer(this, 60, 20);
@@ -373,9 +375,9 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         mainBody.addChild(wing1L);
         tail1.addChild(tail2);
 
-        headArray = new WRModelRenderer[]{neck1, neck2, neck3, neck4, head};
-        tailArray = new WRModelRenderer[]{tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8, tail9, tail10};
-        toeArray = new WRModelRenderer[]{toeR1, toeR2, toeR3, toeL1, toeL2, toeL3};
+        headArray = new WRModelRenderer[] {neck1, neck2, neck3, neck4, head};
+        tailArray = new WRModelRenderer[] {tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8, tail9, tail10};
+        toeArray = new WRModelRenderer[] {toeR1, toeR2, toeR3, toeL1, toeL2, toeL3};
 
         wingMembraneR2.xRot = -0.0001f;
         wingMembraneR3.xRot = 0.0001f;
@@ -386,7 +388,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
     }
 
     @Override
-    public ResourceLocation getTexture(SilverGliderEntity entity) {
+    public ResourceLocation getTexture(SilverGliderEntity entity)
+    {
         if (entity.getVariant() == -1) return SPECIAL;
         if (!entity.isMale()) return FEMALE;
         int index = entity.getVariant();
@@ -394,7 +397,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         return MALE_TEXTURES[index];
     }
 
-    public ResourceLocation getGlowTexture(SilverGliderEntity entity) {
+    public ResourceLocation getGlowTexture(SilverGliderEntity entity)
+    {
         if (entity.getVariant() == -1) return SPECIAL_GLOW;
         int index = entity.getVariant() + 3;
         if (MALE_TEXTURES[index] == null)
@@ -403,34 +407,41 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
     }
 
     @Override
-    public float getShadowRadius(SilverGliderEntity entity) {
+    public float getShadowRadius(SilverGliderEntity entity)
+    {
         return 1f;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack ms, IVertexBuilder buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
+    {
         mainBody.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
     @Override
-    public void postProcess(SilverGliderEntity entity, MatrixStack ms, IRenderTypeBuffer buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks) {
+    public void postProcess(SilverGliderEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    {
         if (entity.isMale()) renderGlowOverlay(getGlowTexture(entity), ms, buffer);
     }
 
     @Override
-    public void setupAnim(SilverGliderEntity entityIn, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch) {
+    public void setupAnim(SilverGliderEntity entityIn, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
+    {
         reset();
 
         flight(entity.flightTimer.get(partialTicks));
         sleep(entity.sleepTimer.get(partialTicks));
         sit(entity.sitTimer.get(partialTicks));
 
-        if (entity.isFlying() || entity.isGliding()) {
+        if (entity.isFlying() || entity.isGliding())
+        {
             flap(wing1L, globalSpeed - 0.2f, 0.05f, false, 0, 0, bob, 0.5f);
             walk(wing1L, globalSpeed + 0.5f, 0.09f, false, 0, 0, bob, 0.5f);
             flap(wing1R, globalSpeed - 0.2f, 0.05f, true, 0, 0, bob, 0.5f);
             walk(wing1R, globalSpeed + 0.5f, 0.09f, true, 0, 0, bob, 0.5f);
-        } else if (!entity.isInSittingPose() && !entity.isSleeping()) {
+        }
+        else if (!entity.isInSittingPose() && !entity.isSleeping())
+        {
             limbSwingAmount = Math.min(limbSwingAmount, 0.6f);
 
             walk(legR1, globalSpeed - 0.15f, 1.5f, false, 0, 0.75f, limbSwing, limbSwingAmount);
@@ -441,17 +452,18 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
             walk(legL2, globalSpeed - 0.15f, 1f, true, -0.7f, -0.3f, limbSwing, limbSwingAmount);
             walk(legL3, globalSpeed - 0.15f, -1f, true, -0.7f, 0.5f, limbSwing, limbSwingAmount);
 
-            for (int i = 0; i < toeArray.length; i++) {
+            for (int i = 0; i < toeArray.length; i++)
+            {
                 boolean invert = i > 2;
-                walk(toeArray[i], globalSpeed - 0.15f, 1f, false, -1f, invert ? -0.8f : 0.8f, limbSwing, limbSwingAmount);
+                walk(toeArray[i], globalSpeed - 0.15f, 1f, false, -1f, invert? -0.8f : 0.8f, limbSwing, limbSwingAmount);
             }
 
             swing(wing1L, globalSpeed - 0.15f, 1, false, 0, 0, limbSwing, limbSwingAmount);
-            walk(wing1L, globalSpeed - 0.15f, 0.5f, false, 2f, 0.25f, limbSwing, limbSwingAmount);
+            walk(wing1L, globalSpeed - 0.15f, 0.5f, false, 2f, 0.25f,limbSwing, limbSwingAmount);
             swing(wing2L, globalSpeed - 0.15f, 0.25f, false, 1f, 0.25f, limbSwing, limbSwingAmount);
 
             swing(wing1R, globalSpeed - 0.15f, 1, false, 0, 0, limbSwing, limbSwingAmount);
-            walk(wing1R, globalSpeed - 0.15f, 0.5f, false, 2f, -0.25f, limbSwing, limbSwingAmount);
+            walk(wing1R, globalSpeed - 0.15f, 0.5f, false, 2f, -0.25f,limbSwing, limbSwingAmount);
             swing(wing2R, globalSpeed - 0.15f, 0.25f, false, 1f, -0.25f, limbSwing, limbSwingAmount);
         }
 
@@ -459,7 +471,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
 
         if (netHeadYaw < -180) netHeadYaw += 360;
         else if (netHeadYaw > 180) netHeadYaw -= 360;
-        if (entity.flightTimer.get() == 1) {
+        if (entity.flightTimer.get() == 1)
+        {
             mainBody.zRot = -(netHeadYaw * Mafs.PI / 180f) * 0.5f;
             mainBody.xRot = headPitch * Mafs.PI / 180f;
 
@@ -479,10 +492,12 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
             phalangeL3.yRot -= foldAmount;
             wingMembraneL2.x += foldAmount * 4;
             wingMembraneL2.yRot -= foldAmount;
-        } else faceTarget(netHeadYaw, entity.isFlying() ? 0 : headPitch, 1, headArray);
+        }
+        else faceTarget(netHeadYaw, entity.isFlying()? 0 : headPitch, 1, headArray);
     }
 
-    public void idle(float frame) {
+    public void idle(float frame)
+    {
         if (entity.isSleeping()) globalSpeed -= 0.2f;
 
         chainWave(headArray, globalSpeed * 0.2f, 0.009f, -1, frame, 1);
@@ -490,7 +505,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         chainSwing(tailArray, globalSpeed * 0.07f, 0.01f, -1, frame, 1);
     }
 
-    public void sit(float amount) {
+    public void sit(float amount)
+    {
         setTime(amount);
 
         move(mainBody, 0, 4, 0);
@@ -510,7 +526,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
 
     }
 
-    public void sleep(float amount) {
+    public void sleep(float amount)
+    {
         setTime(amount);
 
         rotate(neck2, 0.5f, 0, 0);
@@ -523,7 +540,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         rotate(wingMembraneElbowR, 0, 0, -0.1f);
     }
 
-    public void flight(float amount) {
+    public void flight(float amount)
+    {
         setTime(amount);
 
         rotate(neck2, 0.5f, 0, 0);
@@ -544,7 +562,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         rotate(phalangeL3, 0, 0.3f, 0.2f);
         rotate(wingMembraneElbowR, 0, -0.5f, 0);
 
-        if (!entity.isGliding()) {
+        if (!entity.isGliding())
+        {
             rotate(legR1, -0.6f, 0, 0);
             rotate(legR2, 1f, 0, 0);
             rotate(legR3, -0.75f, 0, 0);
@@ -557,7 +576,8 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity> {
         }
     }
 
-    public static ResourceLocation texture(String png) {
+    public static ResourceLocation texture(String png)
+    {
         return Wyrmroost.id(FOLDER + "silver_glider/" + png);
     }
 }

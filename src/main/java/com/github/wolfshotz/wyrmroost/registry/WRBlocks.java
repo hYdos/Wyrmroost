@@ -7,22 +7,22 @@ import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.github.wolfshotz.wyrmroost.world.features.OseriTreeFeature;
 import com.github.wolfshotz.wyrmroost.world.features.TreeGen;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.tags.Tag.Named;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GrassColors;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.biome.BiomeColors;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.GrassColor;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.BiomeColors;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -36,10 +36,28 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WRBlocks {
-    public static final ItemGroup BLOCKS_ITEM_GROUP = new ItemGroup("wyrmroost_dimension") {
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.GrassBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.SandBlock;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TallFlowerBlock;
+import net.minecraft.world.level.block.VineBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class WRBlocks
+{
+    public static final CreativeModeTab BLOCKS_ITEM_GROUP = new CreativeModeTab("wyrmroost_dimension")
+    {
         @Override
-        public ItemStack makeIcon() {
+        public ItemStack makeIcon()
+        {
             return new ItemStack(PURPLE_GEODE_BLOCK.get());
         }
     };
@@ -119,39 +137,46 @@ public class WRBlocks {
     public static final RegistryObject<Block> CANIS_ROOT = register("canis_root", CanisRootBlock::new, extend().cutoutRenderer().item(b -> new BlockItem(b, new Item.Properties().tab(BLOCKS_ITEM_GROUP).food(WRItems.food(1, 0.6f).build()))));
     public static final RegistryObject<Block> ASH_BLOCK = register("ash_block", () -> new SandBlock(0x2D2A33, properties(Material.SAND, SoundType.SAND).strength(0.75f)));
     public static final RegistryObject<Block> FINE_ASH = register("fine_ash", () -> new SandBlock(0x2D2A33, properties(Material.SAND, SoundType.SAND).strength(0.5f)));
-    public static final RegistryObject<Block> ASH = register("ash", () -> new SnowBlock(properties(Material.SAND, SoundType.SAND).strength(0.1f)));
+    public static final RegistryObject<Block> ASH = register("ash", () -> new SnowLayerBlock(properties(Material.SAND, SoundType.SAND).strength(0.1f)));
     public static final RegistryObject<Block> EMBER_BLOCK = register("ember_block", EmberBlock::new);
     public static final RegistryObject<Block> EMBERS = register("embers", EmberLayerBlock::new);
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block) {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block)
+    {
         return register(name, block, extend());
     }
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension) {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension)
+    {
         RegistryObject<Block> delegate = REGISTRY.register(name, block);
         if (extension.itemFactory != null) WRItems.register(name, () -> extension.itemFactory.apply(delegate.get()));
-        if (extension.requiresSetup()) {
+        if (extension.requiresSetup())
+        {
             extension.block = delegate;
             EXTENSIONS.add(extension);
         }
         return delegate;
     }
 
-    public static AbstractBlock.Properties properties(Material material, SoundType sound) {
-        return AbstractBlock.Properties
+    public static BlockBehaviour.Properties properties(Material material, SoundType sound)
+    {
+        return BlockBehaviour.Properties
                 .of(material)
                 .sound(sound);
     }
 
-    public static AbstractBlock.Properties plant() {
+    public static BlockBehaviour.Properties plant()
+    {
         return properties(Material.PLANT, SoundType.GRASS).noCollission();
     }
 
-    public static AbstractBlock.Properties replaceablePlant() {
+    public static BlockBehaviour.Properties replaceablePlant()
+    {
         return properties(Material.REPLACEABLE_PLANT, SoundType.GRASS).noCollission();
     }
 
-    public static AbstractBlock.Properties leaves() {
+    public static BlockBehaviour.Properties leaves()
+    {
         return properties(Material.LEAVES, SoundType.GRASS)
                 .strength(0.2f)
                 .randomTicks()
@@ -161,8 +186,9 @@ public class WRBlocks {
                 .isViewBlocking((s, r, p) -> false);
     }
 
-    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardnessResistance, SoundType sound) {
-        return AbstractBlock.Properties
+    public static BlockBehaviour.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardnessResistance, SoundType sound)
+    {
+        return BlockBehaviour.Properties
                 .of(material)
                 .harvestTool(harvestTool)
                 .harvestLevel(harvestLevel)
@@ -171,8 +197,9 @@ public class WRBlocks {
                 .sound(sound);
     }
 
-    public static AbstractBlock.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardness, float resistance, SoundType sound) {
-        return AbstractBlock.Properties
+    public static BlockBehaviour.Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardness, float resistance, SoundType sound)
+    {
+        return BlockBehaviour.Properties
                 .of(material)
                 .harvestTool(harvestTool)
                 .harvestLevel(harvestLevel)
@@ -181,92 +208,110 @@ public class WRBlocks {
                 .sound(sound);
     }
 
-    public static class Tags {
-        public static final Map<INamedTag<Block>, INamedTag<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
+    public static class Tags
+    {
+        public static final Map<Named<Block>, Named<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
 
-        public static final INamedTag<Block> ORES_GEODE = forge("ores/geode");
-        public static final INamedTag<Block> ORES_PLATINUM = forge("ores/platinum");
+        public static final Named<Block> ORES_GEODE = forge("ores/geode");
+        public static final Named<Block> ORES_PLATINUM = forge("ores/platinum");
 
-        public static final INamedTag<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
-        public static final INamedTag<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
-        public static final INamedTag<Block> OSERI_LOGS = tag("oseri_logs");
-        public static final INamedTag<Block> SAL_LOGS = tag("sal_logs");
-        public static final INamedTag<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
-        public static final INamedTag<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
-        public static final INamedTag<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
-        public static final INamedTag<Block> RED_CORIN_LOGS = tag("red_corin_logs");
-        public static final INamedTag<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
+        public static final Named<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
+        public static final Named<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
+        public static final Named<Block> OSERI_LOGS = tag("oseri_logs");
+        public static final Named<Block> SAL_LOGS = tag("sal_logs");
+        public static final Named<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
+        public static final Named<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
+        public static final Named<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
+        public static final Named<Block> RED_CORIN_LOGS = tag("red_corin_logs");
+        public static final Named<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
 
-        static INamedTag<Block> forge(String path) {
+        static Named<Block> forge(String path)
+        {
             return getFor("forge:" + path);
         }
 
-        public static INamedTag<Block> tag(String path) {
+        public static Named<Block> tag(String path)
+        {
             return getFor(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        public static INamedTag<Block> getFor(String path) {
-            INamedTag<Block> tag = BlockTags.bind(path);
+        public static Named<Block> getFor(String path)
+        {
+            Named<Block> tag = BlockTags.bind(path);
             ITEM_BLOCK_TAGS.put(tag, ItemTags.bind(path));
             return tag;
         }
 
-        public static INamedTag<Item> getItemTagFor(INamedTag<Block> blockTag) {
+        public static Named<Item> getItemTagFor(Named<Block> blockTag)
+        {
             return ITEM_BLOCK_TAGS.get(blockTag);
         }
     }
 
-    public static BlockExtension extend() {
+    public static BlockExtension extend()
+    {
         return new BlockExtension();
     }
 
-    public static int grassTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tint) {
-        return level == null || pos == null ? GrassColors.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
+    public static int grassTint(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tint)
+    {
+        return level == null || pos == null? GrassColor.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
     }
 
-    public static class BlockExtension {
+    public static class BlockExtension
+    {
         RegistryObject<Block> block;
         Function<Block, BlockItem> itemFactory = b -> new BlockItem(b, new Item.Properties().tab(BLOCKS_ITEM_GROUP));
         Supplier<Supplier<RenderType>> renderType;
         IBlockTint tintFunc;
         int[] flammability;
 
-        public BlockExtension item(Function<Block, BlockItem> factory) {
+        public BlockExtension item(Function<Block, BlockItem> factory)
+        {
             this.itemFactory = factory;
             return this;
         }
 
-        public BlockExtension noItem() {
+        public BlockExtension noItem()
+        {
             return item(null);
         }
 
-        public BlockExtension render(Supplier<Supplier<RenderType>> renderSupplier) {
+        public BlockExtension render(Supplier<Supplier<RenderType>> renderSupplier)
+        {
             this.renderType = renderSupplier;
             return this;
         }
 
-        public BlockExtension cutoutRenderer() {
+        public BlockExtension cutoutRenderer()
+        {
             return render(() -> RenderType::cutout);
         }
 
-        public BlockExtension tint(IBlockTint tint) {
+        public BlockExtension tint(IBlockTint tint)
+        {
             this.tintFunc = tint;
             return this;
         }
 
-        public BlockExtension flammability(int spread, int destroyRate) {
+        public BlockExtension flammability(int spread, int destroyRate)
+        {
             this.flammability = new int[]{spread, destroyRate};
             return this;
         }
 
-        private boolean requiresSetup() {
+        private boolean requiresSetup()
+        {
             return renderType != null || flammability != null || tintFunc != null;
         }
 
-        public void callBack() {
-            if (ModUtils.isClient()) {
-                if (renderType != null) RenderTypeLookup.setRenderLayer(block.get(), renderType.get().get());
-                if (tintFunc != null) {
+        public void callBack()
+        {
+            if (ModUtils.isClient())
+            {
+                if (renderType != null) ItemBlockRenderTypes.setRenderLayer(block.get(), renderType.get().get());
+                if (tintFunc != null)
+                {
                     Block b = block.get();
                     ClientEvents.getClient().getBlockColors().register(tintFunc::getTint, b);
                     ClientEvents.getClient().getItemColors().register((s, i) -> tintFunc.getTint(b.defaultBlockState(), null, null, i), b.asItem());
@@ -280,13 +325,14 @@ public class WRBlocks {
     /**
      * Small helper interface to avoid having to double-wrap suppliers
      */
-    public interface IBlockTint {
+    public interface IBlockTint
+    {
         /**
          * @param state     The BlockState of the block we're tinting for
          * @param level     Nullable: possible to get the world from the client but not recommended; could be in ITEM context.
          * @param pos       Nullable: could be in ITEM context.
          * @param tintIndex the index of the tint.
          */
-        int getTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tintIndex);
+        int getTint(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex);
     }
 }

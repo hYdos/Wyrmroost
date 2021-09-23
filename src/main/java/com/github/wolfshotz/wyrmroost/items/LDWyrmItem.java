@@ -5,23 +5,25 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-public class LDWyrmItem extends Item {
+public class LDWyrmItem extends Item
+{
     public static final String DATA_CONTENTS = "DesertWyrm"; // Should ALWAYS be a compound. If it throws a cast class exception SOMETHING fucked up.
 
-    public LDWyrmItem() {
+    public LDWyrmItem()
+    {
         super(WRItems.builder());
 
         if (ModUtils.isClient())
-            ItemModelsProperties.register(this, Wyrmroost.id("is_alive"), (stack, world, player) ->
+            ItemProperties.register(this, Wyrmroost.id("is_alive"), (stack, world, player) ->
             {
                 if (stack.hasTag() && stack.getTag().contains(DATA_CONTENTS)) return 1f;
                 return 0f;
@@ -29,15 +31,19 @@ public class LDWyrmItem extends Item {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context)
+    {
         ItemStack stack = context.getItemInHand();
-        if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains(DATA_CONTENTS)) {
-                World level = context.getLevel();
-                if (!level.isClientSide) {
+        if (stack.hasTag())
+        {
+            CompoundTag tag = stack.getTag();
+            if (tag.contains(DATA_CONTENTS))
+            {
+                Level level = context.getLevel();
+                if (!level.isClientSide)
+                {
                     BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-                    CompoundNBT contents = tag.getCompound(DATA_CONTENTS);
+                    CompoundTag contents = tag.getCompound(DATA_CONTENTS);
                     LesserDesertwyrmEntity entity = WREntities.LESSER_DESERTWYRM.get().create(level);
 
                     entity.deserializeNBT(contents);
@@ -47,9 +53,9 @@ public class LDWyrmItem extends Item {
                     level.addFreshEntity(entity);
                     stack.shrink(1);
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 }
